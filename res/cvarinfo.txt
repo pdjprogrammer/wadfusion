@@ -193,5 +193,3 @@ nosave float wf_hud_alt_alpha_keys = 1.0;
 nosave float wf_hud_alt_alpha_frags = 1.0;
 nosave float wf_hud_alt_alpha_stats = 0.2;
 nosave float wf_hud_alt_alpha_info = 0.2;
-
-nosave noarchive int wf_null;

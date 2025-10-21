@@ -65,7 +65,6 @@ OptionMenu "UDCredits"
 	StaticText "$WF_CRED_XBOXLD", "Red"
 	StaticText "$WF_CRED_CALVIN", "White"
 	StaticText "$WF_CRED_BLANSHINE", "White"
-	Option " ", "wf_null", "WF_NULL"
 }
 
 ImageScroller "D1CreditsPic"
@@ -123,7 +122,6 @@ OptionMenu "D2Credits"
 	StaticText " "
 	StaticText "$WF_CRED_XBOXLD1", "Red"
 	StaticText "$WF_AU_BUKOWSKI", "White"
-	Option " ", "wf_null", "WF_NULL"
 }
 
 ImageScroller "D2CreditsPic"
@@ -159,7 +157,6 @@ OptionMenu "MLCredits"
 	StaticText "$WF_CRED_ADRIAN_CARMACK", "White"
 	StaticText "$WF_CRED_CLOUD", "White"
 	StaticText "$WF_CRED_PRINCE", "White"
-	Option " ", "wf_null", "WF_NULL"
 }
 
 OptionMenu "FDCredits"
@@ -208,7 +205,6 @@ OptionMenu "FDCredits"
 	StaticText "$WF_CRED_ADRIAN_CARMACK", "White"
 	StaticText "$WF_CRED_CLOUD", "White"
 	StaticText "$WF_CRED_PRINCE", "White"
-	Option " ", "wf_null", "WF_NULL"
 }
 
 OptionMenu "NVCredits"
@@ -232,7 +228,6 @@ OptionMenu "NVCredits"
 	StaticText "$WF_CRED_ADRIAN_CARMACK", "White"
 	StaticText "$WF_CRED_CLOUD", "White"
 	StaticText "$WF_CRED_PRINCE", "White"
-	Option " ", "wf_null", "WF_NULL"
 }
 
 OptionMenu "SCredits"
@@ -265,7 +260,6 @@ OptionMenu "SCredits"
 	StaticText "$WF_CRED_ADRIAN_CARMACK", "White"
 	StaticText "$WF_CRED_CLOUD", "White"
 	StaticText "$WF_CRED_PRINCE", "White"
-	Option " ", "wf_null", "WF_NULL"
 }
 
 ImageScroller "SCreditsPic"
@@ -306,7 +300,6 @@ OptionMenu "S2Credits"
 	StaticText "$WF_CRED_ADRIAN_CARMACK", "White"
 	StaticText "$WF_CRED_CLOUD", "White"
 	StaticText "$WF_CRED_PRINCE", "White"
-	Option " ", "wf_null", "WF_NULL"
 }
 
 ImageScroller "S2CreditsPic"
@@ -363,7 +356,6 @@ OptionMenu "XCredits"
 	StaticText "$WF_AU_CIBULAS", "White"
 	StaticText "$WF_AU_MURCHISON", "White"
 	StaticText "$WF_AU_MAYFIELD", "White"
-	Option " ", "wf_null", "WF_NULL"
 	StaticText "$WF_CRED_ORIG", "Red"
 	StaticText "$WF_CRED_JOHN_CARMACK", "White"
 	StaticText "$WF_AU_ROMERO", "White"
@@ -373,7 +365,6 @@ OptionMenu "XCredits"
 	StaticText "$WF_CRED_PRINCE", "White"
 	StaticText "$WF_AU_MCGEE", "White"
 	StaticText "$WF_AU_PETERSEN", "White"
-	Option " ", "wf_null", "WF_NULL"
 }
 
 ImageScroller "XCreditsPic"
@@ -420,10 +411,4 @@ OptionMenu "WFCredits"
 	StaticText " "
 	StaticText "$WF_CRED_LOC_RUSSIAN", "Red"
 	StaticText "$WF_CRED_OWLET", "White"
-	Option " ", "wf_null", "WF_NULL"
-}
-
-OptionValue "WF_NULL"
-{
-    0, " "
 }

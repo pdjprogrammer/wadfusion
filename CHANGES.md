@@ -40,6 +40,8 @@
   script. Not sure how it got there.
 - Added options to view the original credits graphics in the respective games'
   credits menus.
+- Removed superfluous and hacky controller support from the credits menus.
+  - Menus can be scrolled natively with the L1 and R1 controller buttons.
 - Removed the ENDOOM screen.
 - Added an option to view all the "Help" screens.
 - Added "ID24 status bars" compatibility option.
