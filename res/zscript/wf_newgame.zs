@@ -149,7 +149,14 @@ extend class WadFusionStaticHandler
 	{
 		if ( CVar.FindCVar("wf_intros").GetBool() )
 		{
-			if ( nextMap != "e2m1" && nextMap != "e3m1" && nextMap != "e4m1" && nextMap != "ml_map01" && nextMap != "lr_map08" )
+			if ( nextMap == "e1m1" ||
+				 nextMap == "e5m1" ||
+				 nextMap == "e6m1" ||
+				 nextMap == "map01" ||
+				 nextMap == "nv_map01" ||
+				 nextMap == "lr_map01" ||
+				 nextMap == "tn_map01" ||
+				 nextMap == "pl_map01" )
 				Level.ChangeLevel("wf_story", 0, CHANGELEVEL_RESETINVENTORY|CHANGELEVEL_RESETHEALTH|CHANGELEVEL_NOINTERMISSION);
 			else
 				Level.ChangeLevel(nextMap, 0, CHANGELEVEL_RESETINVENTORY|CHANGELEVEL_RESETHEALTH|CHANGELEVEL_NOINTERMISSION);
