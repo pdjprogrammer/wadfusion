@@ -3,8 +3,6 @@
 defaultmap
 {
 	SuckTime = 1
-	NoJump
-	NoCrouch
 }
 
 // Episode 1 Part 1

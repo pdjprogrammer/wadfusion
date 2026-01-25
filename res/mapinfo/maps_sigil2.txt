@@ -12,8 +12,6 @@ defaultmap
 	EnterPic = "SIGILIN2"
 	ExitPic = "SIGILIN2"
 	BorderTexture = "FLOOR7_2"
-	NoJump
-	NoCrouch
 	Author = "$WF_AU_ROMERO"
 }
 

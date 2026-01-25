@@ -9,8 +9,6 @@ defaultmap
 	ExitPic = "$IN_EPI1"
 	InterMusic = "$MUSIC_INTER"
 	BorderTexture = "FLOOR7_2"
-	NoJump
-	NoCrouch
 	Author = "$WF_AU_ROMERO"
 }
 

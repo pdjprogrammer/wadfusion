@@ -4,8 +4,6 @@ defaultmap
 {
 	Sky1 = "SKY1"
 	SuckTime = 1
-	NoJump
-	NoCrouch
 	ResetHealth
 	ResetInventory
 	ResetItems

@@ -5,8 +5,6 @@ defaultmap
 	Cluster = 11
 	SuckTime = 1
 	ExitPic = "INTERNV"
-	NoJump
-	NoCrouch
 }
 
 map NV_MAP01 "$NHUSTR_1"

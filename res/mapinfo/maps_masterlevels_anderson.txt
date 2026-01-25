@@ -6,8 +6,6 @@ defaultmap
 {
 	Sky1 = "SKY1"
 	SuckTime = 1
-	NoJump
-	NoCrouch
 	Author = "$WF_AU_ANDERSON"
 }
 

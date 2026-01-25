@@ -3,8 +3,6 @@
 defaultmap
 {
 	NoIntermission
-	NoJump
-	NoCrouch
 }
 
 map DM_MAP01 "$MHUSTR_1"

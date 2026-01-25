@@ -7,8 +7,6 @@ defaultmap
 	SuckTime = 1
 	InterMusic = "$MUSIC_INTER"
 	BorderTexture = "FLOOR7_2"
-	NoJump
-	NoCrouch
 }
 
 // Registered/Retail Episode 1

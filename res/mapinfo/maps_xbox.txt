@@ -3,8 +3,6 @@
 defaultmap
 {
 	SuckTime = 1
-	NoJump
-	NoCrouch
 }
 
 map E1M10 "$HUSTR_E1M10"
