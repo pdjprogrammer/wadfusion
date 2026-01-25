@@ -153,24 +153,14 @@ extend class WadFusionStatusBar
 		}
 		
 		// Draw keys
-		int ammoInvPosKeysOffset = 0;
-		
 		bool locks[6];
-		bool hasKeys;
 		
 		for ( int i = 0; i < 6; i++ )
-		{
 			locks[i] = CPlayer.mo.CheckKeys(i + 1, false, true);
-			if ( locks[i] && !hasKeys )
-			{
-				ammoInvPosKeysOffset += 13;
-				hasKeys = true;
-			}
-		}
 		
 		if ( !deathmatch && altHUDKeys )
 		{
-			Vector2 keyInvPos = (-8 - ultraWide, -20);
+			Vector2 keyInvPos = (-84 - ultraWide, -25);
 			int keyInvPosYIncrement = 8;
 			
 			String keyImage = "";
@@ -219,16 +209,16 @@ extend class WadFusionStatusBar
 			int invY = -25;
 			if ( ammotype1 != null )
 			{
-				DrawInventoryIcon(ammotype1, (-14 - ammoInvPosKeysOffset - ultraWide, -10), DI_SCREEN_RIGHT_BOTTOM, ammoAlpha);
-				DrawString(mHUDFont, FormatNumber(ammotype1.Amount, 1), (-30 - ammoInvPosKeysOffset - ultraWide, -25),
+				DrawInventoryIcon(ammotype1, (-14 - ultraWide, -10), DI_SCREEN_RIGHT_BOTTOM, ammoAlpha);
+				DrawString(mHUDFont, FormatNumber(ammotype1.Amount, 1), (-30 - ultraWide, -25),
 						   DI_SCREEN_RIGHT_BOTTOM|DI_TEXT_ALIGN_RIGHT|DI_NOSHADOW, GetAmmoColor(0), ammoAlpha);
 				invY -= 27;
 			}
 			
 			if ( ammotype2 != null && ammotype2 != ammotype1 )
 			{
-				DrawInventoryIcon(ammotype2, (-14 - ammoInvPosKeysOffset - ultraWide, invY + 15), DI_SCREEN_RIGHT_BOTTOM, ammoAlpha);
-				DrawString(mHUDFont, FormatNumber(ammotype2.Amount, 1), (-30 - ammoInvPosKeysOffset - ultraWide, invY),
+				DrawInventoryIcon(ammotype2, (-14 - ultraWide, invY + 15), DI_SCREEN_RIGHT_BOTTOM, ammoAlpha);
+				DrawString(mHUDFont, FormatNumber(ammotype2.Amount, 1), (-30 - ultraWide, invY),
 						   DI_SCREEN_RIGHT_BOTTOM|DI_TEXT_ALIGN_RIGHT|DI_NOSHADOW, GetAmmoColor(1), ammoAlpha);
 				invY -= 27;
 				ammoInvPos.Y -= 27;
@@ -356,7 +346,7 @@ extend class WadFusionStatusBar
 		// Draw weapon slots
 		if ( altHUDWeapInv )
 		{
-			Vector2 weapInvPos = (-17 - ammoInvPosKeysOffset - ultraWide, -8);
+			Vector2 weapInvPos = (-3 - ultraWide, -8);
 			int weapInvPosXIncrement = 5;
 			
 			for ( int i = 10; i > 0; i-- )
