@@ -23,37 +23,56 @@ extend class WadFusionStatusBar
 {
 	protected void WadFusionAlternateHUD()
 	{
-		String mapName = Level.MapName.MakeLower();
-		let isDoom1 = mapName.Left(1) == "e" && mapName.Mid(2, 1) == "m";
-		let isId1 = mapName.Left(3) == "lr_";
-		let id1WeapSwap = CVar.FindCVar("wf_compat_id24_weapons").GetInt() == 1;
-		let id1WeapSwapAlways = CVar.FindCVar("wf_compat_id24_weapons").GetInt() >= 2;
-		let hudId24 = CVar.FindCVar("wf_hud_id24").GetBool();
+		let id1WeapSwap        = CVar.FindCVar("wf_compat_id24_weapons").GetInt() == 1;
+		let id1WeapSwapAlways  = CVar.FindCVar("wf_compat_id24_weapons").GetInt() >= 2;
+		let hudId24            = CVar.FindCVar("wf_hud_id24").GetBool();
 		let hudSwapHealthArmor = CVar.FindCVar("wf_hud_swaphealtharmor").GetBool();
-		
-		let mlRejects = CVar.FindCVar("wf_map_mlr").GetBool();
-		String mlMap = mapName.Mid(6);
-		let mlCabalMap = mlMap == "19" || mlMap == "37" || mlMap == "38" ||
-						 mlMap == "39" || mlMap == "20" || mlMap == "40" ||
-						 mlMap == "18" || mlMap == "41" || mlMap == "42" ||
-						 mlMap == "10" || mlMap == "43" || mlMap == "21";
-		let isCabal = mlRejects && mapName.Left(6) == "ml_map" && mlCabalMap;
 		
 		int ultraWide = CVar.FindCVar("wf_hud_ultrawide").GetInt();
 		if ( CVar.FindCVar("wf_hud_ultrawide_fullscreen").GetBool() && !CVar.FindCVar("vid_fullscreen").GetBool() )
 			ultraWide = 0;
 		
-		int health    = CPlayer.Health;
-		int maxHealth = CPlayer.mo.GetMaxHealth(true);
-		let armor     = CPlayer.mo.FindInventory("BasicArmor");
+		let altHUDMugshot         = CVar.FindCVar("wf_hud_alt_mugshot").GetInt() >= 2;
+		let altHUDMugshotReplace  = CVar.FindCVar("wf_hud_alt_mugshot").GetInt() == 1;
+		let altHUDHealth          = CVar.FindCVar("wf_hud_alt_health").GetBool();
+		let altHUDArmor           = CVar.FindCVar("wf_hud_alt_armor").GetBool();
+		let altHUDAmmo            = CVar.FindCVar("wf_hud_alt_ammo").GetBool();
+		let altHUDAmmoInv         = CVar.FindCVar("wf_hud_alt_ammoinv").GetBool();
+		let altHUDPowerup         = CVar.FindCVar("wf_hud_alt_powerup").GetBool();
+		let altHUDWeapInv         = CVar.FindCVar("wf_hud_alt_weapinv").GetBool();
+		let altHUDKeys            = CVar.FindCVar("wf_hud_alt_keys").GetBool();
+		let altHUDFrags           = CVar.FindCVar("wf_hud_alt_frags").GetBool();
+		let altHUDStatsKills      = CVar.FindCVar("wf_hud_alt_stats_kills").GetInt() >= 1;
+		let altHUDStatsKillsNotNm = CVar.FindCVar("wf_hud_alt_stats_kills").GetInt() == 1;
+		let altHUDStatsItems      = CVar.FindCVar("wf_hud_alt_stats_items").GetBool();
+		let altHUDStatsSecrets    = CVar.FindCVar("wf_hud_alt_stats_secrets").GetBool();
+		let altHUDStatsIcons      = CVar.FindCVar("wf_hud_alt_stats_icons").GetBool();
+		let altHUDInfoTime        = CVar.FindCVar("wf_hud_alt_info_time").GetBool();
+		let altHUDInfoTotalTime   = CVar.FindCVar("wf_hud_alt_info_totaltime").GetBool();
+		let altHUDInfoTimeMillis  = CVar.FindCVar("wf_hud_alt_info_timemillis").GetBool();
+		let altHUDInfoMapName     = CVar.FindCVar("wf_hud_alt_info_mapname").GetBool();
+		let altHUDInfoMapLabel    = CVar.FindCVar("wf_hud_alt_info_maplabel").GetBool();
+		let altHUDInfoMapAuthor   = CVar.FindCVar("wf_hud_alt_info_mapauthor").GetBool();
+		let altHUDInfoSkill       = CVar.FindCVar("wf_hud_alt_info_skill").GetBool();
+		let altHUDInfoDontOffset  = CVar.FindCVar("wf_hud_alt_info_dontoffset").GetBool();
+		
+		double healthAlpha  = CVar.FindCVar("wf_hud_alt_alpha_health").GetFloat();
+		double ammoAlpha    = CVar.FindCVar("wf_hud_alt_alpha_ammo").GetFloat();
+		double ammoInvAlpha = CVar.FindCVar("wf_hud_alt_alpha_ammoinv").GetFloat();
+		double powerupAlpha = CVar.FindCVar("wf_hud_alt_alpha_powerup").GetFloat();
+		double weapInvAlpha = CVar.FindCVar("wf_hud_alt_alpha_weapinv").GetFloat();
+		double keysAlpha    = CVar.FindCVar("wf_hud_alt_alpha_keys").GetFloat();
+		double fragsAlpha   = CVar.FindCVar("wf_hud_alt_alpha_frags").GetFloat();
+		double statsAlpha   = CVar.FindCVar("wf_hud_alt_alpha_stats").GetFloat();
+		double infoAlpha    = CVar.FindCVar("wf_hud_alt_alpha_info").GetFloat();
+		
+		String mapName = Level.MapName.MakeLower();
+		
+		let isDoom1    = mapName.Left(1) == "e" && mapName.Mid(2, 1) == "m";
+		let isId1      = mapName.Left(3) == "lr_";
 		
 		let hasBackpack = CPlayer.mo.FindInventory("Backpack");
 		let hasBerserk  = CPlayer.mo.FindInventory("PowerStrength");
-		
-		let hasBlurSphere            = Powerup(CPlayer.mo.FindInventory("PowerInvisibility"));
-		let hasInvulnerabilitySphere = Powerup(CPlayer.mo.FindInventory("PowerInvulnerable"));
-		let hasInfrared              = Powerup(CPlayer.mo.FindInventory("PowerLightAmp"));
-		let hasRadSuit               = Powerup(CPlayer.mo.FindInventory("PowerIronFeet"));
 		
 		let hasSuperShotgun = CPlayer.mo.FindInventory("SuperShotgun");
 		let hasIncinerator  = CPlayer.mo.FindInventory("ID24Incinerator");
@@ -90,91 +109,42 @@ extend class WadFusionStatusBar
 		if ( fuel != null )
 			fuelLow = fuel.MaxAmount / ( hasBackpack ? 8 : 4 );
 		
-		let altHudMugshot         = CVar.FindCVar("wf_hud_alt_mugshot").GetInt() >= 2;
-		let altHudMugshotReplace  = CVar.FindCVar("wf_hud_alt_mugshot").GetInt() == 1;
-		let altHudHealth          = CVar.FindCVar("wf_hud_alt_health").GetBool();
-		let altHudArmor           = CVar.FindCVar("wf_hud_alt_armor").GetBool();
-		let altHudAmmo            = CVar.FindCVar("wf_hud_alt_ammo").GetBool();
-		let altHudAmmoInv         = CVar.FindCVar("wf_hud_alt_ammoinv").GetBool();
-		let altHudPowerup         = CVar.FindCVar("wf_hud_alt_powerup").GetBool();
-		let altHudWeapInv         = CVar.FindCVar("wf_hud_alt_weapinv").GetBool();
-		let altHudKeys            = CVar.FindCVar("wf_hud_alt_keys").GetBool();
-		let altHudFrags           = CVar.FindCVar("wf_hud_alt_frags").GetBool();
-		let altHudStatsKills      = CVar.FindCVar("wf_hud_alt_stats_kills").GetInt() >= 1;
-		let altHudStatsKillsNotNm = CVar.FindCVar("wf_hud_alt_stats_kills").GetInt() == 1;
-		let altHudStatsItems      = CVar.FindCVar("wf_hud_alt_stats_items").GetBool();
-		let altHudStatsSecrets    = CVar.FindCVar("wf_hud_alt_stats_secrets").GetBool();
-		let altHudStatsIcons      = CVar.FindCVar("wf_hud_alt_stats_icons").GetBool();
-		let altHudInfoTime        = CVar.FindCVar("wf_hud_alt_info_time").GetBool();
-		let altHudInfoTotalTime   = CVar.FindCVar("wf_hud_alt_info_totaltime").GetBool();
-		let altHudInfoTimeMillis  = CVar.FindCVar("wf_hud_alt_info_timemillis").GetBool();
-		let altHudInfoMapName     = CVar.FindCVar("wf_hud_alt_info_mapname").GetBool();
-		let altHudInfoMapLabel    = CVar.FindCVar("wf_hud_alt_info_maplabel").GetBool();
-		let altHudInfoMapAuthor   = CVar.FindCVar("wf_hud_alt_info_mapauthor").GetBool();
-		let altHudInfoSkill       = CVar.FindCVar("wf_hud_alt_info_skill").GetBool();
-		let altHudInfoDontOffset  = CVar.FindCVar("wf_hud_alt_info_dontoffset").GetBool();
-		
-		double healthAlpha  = CVar.FindCVar("wf_hud_alt_alpha_health").GetFloat();
-		double ammoAlpha    = CVar.FindCVar("wf_hud_alt_alpha_ammo").GetFloat();
-		double ammoInvAlpha = CVar.FindCVar("wf_hud_alt_alpha_ammoinv").GetFloat();
-		double powerupAlpha = CVar.FindCVar("wf_hud_alt_alpha_powerup").GetFloat();
-		double weapInvAlpha = CVar.FindCVar("wf_hud_alt_alpha_weapinv").GetFloat();
-		double keysAlpha    = CVar.FindCVar("wf_hud_alt_alpha_keys").GetFloat();
-		double fragsAlpha   = CVar.FindCVar("wf_hud_alt_alpha_frags").GetFloat();
-		double statsAlpha   = CVar.FindCVar("wf_hud_alt_alpha_stats").GetFloat();
-		double infoAlpha    = CVar.FindCVar("wf_hud_alt_alpha_info").GetFloat();
-		
 		// Draw health
 		int hudHealthYOffset = 0;
 		int hudMugshotXOffset = 0;
 		
-		if ( ( hudSwapHealthArmor || !altHudHealth ) && altHudArmor )
+		if ( ( hudSwapHealthArmor || !altHUDHealth ) && altHUDArmor )
 			hudHealthYOffset = 27;
 		
-		if ( altHudHealth )
+		int health = CPlayer.Health;
+		
+		if ( altHUDHealth )
 		{
-			if ( !altHudMugshotReplace )
+			if ( !altHUDMugshotReplace )
 				DrawImage(hasBerserk ? "PSTRA0" : "MEDIA0", (20 + ultraWide, -10 - hudHealthYOffset), DI_SCREEN_LEFT_BOTTOM, healthAlpha);
 			else
 				DrawTexture(GetMugShot(5), (3 + ultraWide, -35 - hudHealthYOffset), DI_ITEM_OFFSETS|DI_SCREEN_LEFT_BOTTOM, healthAlpha);
 			
-			let healthColor =
-				health > maxhealth * 2    ? Font.CR_PURPLE :
-				health > maxhealth * 1.5  ? Font.CR_BLUE :
-				health > maxhealth * 1    ? Font.CR_CYAN :
-				health > maxhealth * 0.75 ? Font.CR_GREEN :
-				health > maxhealth * 0.5  ? Font.CR_YELLOW :
-				health > maxhealth * 0.25 ? Font.CR_ORANGE :
-				health > maxhealth * 0    ? Font.CR_RED :
-				Font.CR_BLACK;
-			
 			DrawString(mHUDFont, FormatNumber(health, 1), (40 + ultraWide, -25 - hudHealthYOffset),
-					   DI_SCREEN_LEFT_BOTTOM|DI_NOSHADOW, healthColor, healthAlpha);
+					   DI_SCREEN_LEFT_BOTTOM|DI_NOSHADOW, GetHealthColor(), healthAlpha);
 		}
 		
-		if ( !altHudHealth && !altHudArmor )
+		if ( !altHUDHealth && !altHUDArmor )
 			hudMugshotXOffset = 81;
 		
-		if ( altHudMugshot )
+		if ( altHUDMugshot )
 			DrawTexture(GetMugShot(5), (84 - hudMugshotXOffset + ultraWide, -35), DI_ITEM_OFFSETS|DI_SCREEN_LEFT_BOTTOM, healthAlpha);
 		
 		// Draw armor
-		if ( altHudArmor )
+		let armor     = CPlayer.mo.FindInventory("BasicArmor");
+		
+		if ( altHUDArmor )
 		{
-			let armorColor =
-				armor.Amount > 200 ? Font.CR_PURPLE :
-				armor.Amount > 150 ? Font.CR_BLUE :
-				armor.Amount > 100 ? Font.CR_CYAN :
-				armor.Amount > 75  ? Font.CR_GREEN :
-				armor.Amount > 50  ? Font.CR_YELLOW :
-				armor.Amount > 25  ? Font.CR_ORANGE :
-				Font.CR_RED;
-			
 			if ( armor != null && armor.Amount > 0 )
 			{
 				DrawInventoryIcon(armor, (20 + ultraWide, -37 + hudHealthYOffset), DI_SCREEN_LEFT_BOTTOM, healthAlpha);
 				DrawString(mHUDFont, FormatNumber(armor.Amount, 1), (40 + ultraWide, -52 + hudHealthYOffset),
-						   DI_SCREEN_LEFT_BOTTOM|DI_NOSHADOW, armorColor, healthAlpha);
+						   DI_SCREEN_LEFT_BOTTOM|DI_NOSHADOW, GetArmorColor(), healthAlpha);
 			}
 		}
 		
@@ -197,7 +167,7 @@ extend class WadFusionStatusBar
 			}
 		}
 		
-		if ( !deathmatch && altHudKeys )
+		if ( !deathmatch && altHUDKeys )
 		{
 			// Blue key
 			if ( locks[1] && locks[4] )
@@ -239,23 +209,14 @@ extend class WadFusionStatusBar
 		Vector2 ammoInvPos = (-4 - ultraWide, -48);
 		int ammoInvPosYIncrement = 8;
 		
-		if ( altHudAmmo )
+		if ( altHUDAmmo )
 		{
-			int ammoType1Low = 0;
-			int ammoType2Low = 0;
-			
-			if ( ammotype1 != null )
-				ammoType1Low = ammotype1.MaxAmount / ( hasBackpack ? 8 : 4 );
-			if ( ammotype2 != null )
-				ammoType2Low = ammotype2.MaxAmount / ( hasBackpack ? 8 : 4 );
-			
 			int invY = -25;
 			if ( ammotype1 != null )
 			{
 				DrawInventoryIcon(ammotype1, (-14 - ammoInvPosKeysOffset - ultraWide, -10), DI_SCREEN_RIGHT_BOTTOM, ammoAlpha);
 				DrawString(mHUDFont, FormatNumber(ammotype1.Amount, 1), (-30 - ammoInvPosKeysOffset - ultraWide, -25),
-						   DI_SCREEN_RIGHT_BOTTOM|DI_TEXT_ALIGN_RIGHT|DI_NOSHADOW,
-						   ammotype1.Amount > 0 ? ( ammotype1.Amount > ammoType1Low ? Font.CR_WHITE : Font.CR_RED ) : Font.CR_BLACK, ammoAlpha);
+						   DI_SCREEN_RIGHT_BOTTOM|DI_TEXT_ALIGN_RIGHT|DI_NOSHADOW, GetAmmoColor(0), ammoAlpha);
 				invY -= 27;
 			}
 			
@@ -263,8 +224,7 @@ extend class WadFusionStatusBar
 			{
 				DrawInventoryIcon(ammotype2, (-14 - ammoInvPosKeysOffset - ultraWide, invY + 15), DI_SCREEN_RIGHT_BOTTOM, ammoAlpha);
 				DrawString(mHUDFont, FormatNumber(ammotype2.Amount, 1), (-30 - ammoInvPosKeysOffset - ultraWide, invY),
-						   DI_SCREEN_RIGHT_BOTTOM|DI_TEXT_ALIGN_RIGHT|DI_NOSHADOW,
-						   ammotype2.Amount > 0 ? ( ammotype2.Amount > ammoType2Low ? Font.CR_WHITE : Font.CR_RED ) : Font.CR_BLACK, ammoAlpha);
+						   DI_SCREEN_RIGHT_BOTTOM|DI_TEXT_ALIGN_RIGHT|DI_NOSHADOW, GetAmmoColor(1), ammoAlpha);
 				invY -= 27;
 				ammoInvPos.Y -= 27;
 			}
@@ -282,7 +242,7 @@ extend class WadFusionStatusBar
 		}
 		
 		// Draw ammo pool
-		if ( altHudAmmoInv )
+		if ( altHUDAmmoInv )
 		{
 			String backpackColor  = hasBackpack ? "\cf" : "\cj";
 			String ammoBulletsStr = backpackColor..StringTable.Localize("$WF_HUD_AMMO_BULLETS");
@@ -358,54 +318,56 @@ extend class WadFusionStatusBar
 		// Draw powerups
 		Vector2 powerupPos = (-18 - ultraWide, -4 + ammoInvPos.Y);
 		int powerupPosYIncrement = 30;
-		int powerupCount = 0;
+		int powerupTime = 0;
+		int powerupColor = 0;
 		
-		if ( altHudPowerup )
+		let hasBlurSphere            = Powerup(CPlayer.mo.FindInventory("PowerInvisibility"));
+		let hasInvulnerabilitySphere = Powerup(CPlayer.mo.FindInventory("PowerInvulnerable"));
+		let hasInfrared              = Powerup(CPlayer.mo.FindInventory("PowerLightAmp"));
+		let hasRadSuit               = Powerup(CPlayer.mo.FindInventory("PowerIronFeet"));
+		
+		if ( altHUDPowerup )
 		{
 			if ( hasBlurSphere != null )
 			{
-				int blurSphereTime = int(Ceil(double(hasBlurSphere.EffectTics) / GameTicRate));
+				powerupTime = int(Ceil(double(hasBlurSphere.EffectTics) / GameTicRate));
+				powerupColor = powerupTime > 4 ? Font.CR_WHITE : Font.CR_DARKRED;
 				DrawImage("PINSAHUD", powerupPos, DI_SCREEN_RIGHT_BOTTOM, powerupAlpha);
-				DrawString(mConFont, FormatNumber(blurSphereTime, 1), (powerupPos.X, powerupPos.Y - 8),
-						   DI_SCREEN_RIGHT_BOTTOM|DI_TEXT_ALIGN_CENTER,
-						   blurSphereTime > 4 ? Font.CR_WHITE : Font.CR_DARKRED, powerupAlpha);
+				DrawString(mConFont, FormatNumber(powerupTime, 1), (powerupPos.X, powerupPos.Y - 8),
+						   DI_SCREEN_RIGHT_BOTTOM|DI_TEXT_ALIGN_CENTER, powerupColor, powerupAlpha);
 				powerupPos.Y -= powerupPosYIncrement;
-				powerupCount++;
 			}
 			
 			if ( hasInvulnerabilitySphere != null )
 			{
-				int invulnerabilitySphereTime = int(Ceil(double(hasInvulnerabilitySphere.EffectTics) / GameTicRate));
+				powerupTime = int(Ceil(double(hasInvulnerabilitySphere.EffectTics) / GameTicRate));
+				powerupColor = powerupTime > 4 ? Font.CR_WHITE : Font.CR_DARKRED;
 				DrawImage("PINVAHUD", powerupPos, DI_SCREEN_RIGHT_BOTTOM, powerupAlpha);
-				DrawString(mConFont, FormatNumber(invulnerabilitySphereTime, 1), (powerupPos.X, powerupPos.Y - 8),
-						   DI_SCREEN_RIGHT_BOTTOM|DI_TEXT_ALIGN_CENTER,
-						   invulnerabilitySphereTime > 4 ? Font.CR_WHITE : Font.CR_DARKRED, powerupAlpha);
+				DrawString(mConFont, FormatNumber(powerupTime, 1), (powerupPos.X, powerupPos.Y - 8),
+						   DI_SCREEN_RIGHT_BOTTOM|DI_TEXT_ALIGN_CENTER, powerupColor, powerupAlpha);
 				powerupPos.Y -= powerupPosYIncrement;
-				powerupCount++;
 			}
 			
 			if ( hasInfrared != null )
 			{
-				int infraredTime = int(Ceil(double(hasInfrared.EffectTics) / GameTicRate));
+				powerupTime = int(Ceil(double(hasInfrared.EffectTics) / GameTicRate));
+				powerupColor = powerupTime > 4 ? Font.CR_WHITE : Font.CR_DARKRED;
 				DrawImage("PVISAHUD", powerupPos, DI_SCREEN_RIGHT_BOTTOM, powerupAlpha);
-				DrawString(mConFont, FormatNumber(infraredTime, 1), (powerupPos.X, powerupPos.Y - 8),
-						   DI_SCREEN_RIGHT_BOTTOM|DI_TEXT_ALIGN_CENTER,
-						   infraredTime > 4 ? Font.CR_WHITE : Font.CR_DARKRED, powerupAlpha);
+				DrawString(mConFont, FormatNumber(powerupTime, 1), (powerupPos.X, powerupPos.Y - 8),
+						   DI_SCREEN_RIGHT_BOTTOM|DI_TEXT_ALIGN_CENTER, powerupColor, powerupAlpha);
 				powerupPos.Y -= powerupPosYIncrement;
-				powerupCount++;
 			}
 			
 			if ( hasRadSuit != null )
 			{
-				int radSuitTime = int(Ceil(double(hasRadSuit.EffectTics) / GameTicRate));
+				powerupTime = int(Ceil(double(hasRadSuit.EffectTics) / GameTicRate));
+				powerupColor = powerupTime > 4 ? Font.CR_WHITE : Font.CR_DARKRED;
 				if ( hasInfrared )
 					powerupPos.Y += 12;
 				DrawImage("SUITA0", powerupPos, DI_SCREEN_RIGHT_BOTTOM, powerupAlpha);
-				DrawString(mConFont, FormatNumber(radSuitTime, 1), (powerupPos.X, powerupPos.Y - 8),
-						   DI_SCREEN_RIGHT_BOTTOM|DI_TEXT_ALIGN_CENTER,
-						   radSuitTime > 4 ? Font.CR_WHITE : Font.CR_DARKRED, powerupAlpha);
+				DrawString(mConFont, FormatNumber(powerupTime, 1), (powerupPos.X, powerupPos.Y - 8),
+						   DI_SCREEN_RIGHT_BOTTOM|DI_TEXT_ALIGN_CENTER, powerupColor, powerupAlpha);
 				powerupPos.Y -= powerupPosYIncrement;
-				powerupCount++;
 			}
 		}
 		
@@ -413,7 +375,7 @@ extend class WadFusionStatusBar
 		Vector2 weapInvPos = (-17 - ammoInvPosKeysOffset - ultraWide, -8);
 		int weapInvPosXIncrement = 5;
 		
-		if ( altHudWeapInv )
+		if ( altHUDWeapInv )
 		{
 			for ( int i = 10; i > 0; i-- )
 			{
@@ -465,9 +427,9 @@ extend class WadFusionStatusBar
 		
 		// Draw stats
 		Vector2 statsPos = (4 + ultraWide, -72);
-		int statsPosYIncrement = altHudStatsIcons ? 12 : 9;
+		int statsPosYIncrement = altHUDStatsIcons ? 12 : 9;
 		
-		if ( deathmatch && altHudFrags )
+		if ( deathmatch && altHUDFrags )
 		{
 			DrawImage("M_SKULL2", (20 + ultraWide, -64), DI_SCREEN_LEFT_BOTTOM, fragsAlpha);
 			DrawString(mHUDFont, FormatNumber(CPlayer.FragCount, 1), (40 + ultraWide, -79),
@@ -475,53 +437,50 @@ extend class WadFusionStatusBar
 		}
 		else if ( !deathmatch )
 		{
-			if ( altHudStatsSecrets )
+			if ( altHUDStatsSecrets )
 			{
 				int mapSectersFound = Level.Found_Secrets;
 				int mapSectersTotal = Level.Total_Secrets;
+				int mapSecretsColor = mapSectersFound == mapSectersTotal ? Font.CR_GOLD : Font.CR_GREEN;
 				String secretsStr = StringTable.Localize("$WF_HUD_STATS_SECRETS");
 				String mapSecrets = mapSectersFound.."/"..mapSectersTotal;
-				let mapSecrets100 = mapSectersFound == mapSectersTotal;
-				if ( altHudStatsIcons )
+				if ( altHUDStatsIcons )
 					DrawImage("SECRETS", (statsPos.X + 4, statsPos.Y + 8), DI_SCREEN_LEFT_BOTTOM, statsAlpha);
 				else
 					DrawString(mSmallFontMono, secretsStr..":", statsPos, DI_SCREEN_LEFT_BOTTOM, Font.CR_RED, statsAlpha);
-				DrawString(mSmallFont, mapSecrets, (statsPos.X + 16, statsPos.Y),
-						   DI_SCREEN_LEFT_BOTTOM, mapSecrets100 ? Font.CR_GOLD : Font.CR_GREEN, statsAlpha);
+				DrawString(mSmallFont, mapSecrets, (statsPos.X + 16, statsPos.Y), DI_SCREEN_LEFT_BOTTOM, mapSecretsColor, statsAlpha);
 				statsPos.Y -= statsPosYIncrement;
 			}
 			
-			if ( altHudStatsItems )
+			if ( altHUDStatsItems )
 			{
 				int mapItemsFound = Level.Found_Items;
 				int mapItemsTotal = Level.Total_Items;
+				int mapItemsColor = mapItemsFound == mapItemsTotal ? Font.CR_GOLD : Font.CR_GREEN;
 				String itemsStr = StringTable.Localize("$WF_HUD_STATS_ITEMS");
 				String mapItems = mapItemsFound.."/"..mapItemsTotal;
-				let mapItems100 = mapItemsFound == mapItemsTotal;
-				if ( altHudStatsIcons )
+				if ( altHUDStatsIcons )
 					DrawImage("ITEMS", (statsPos.X + 4, statsPos.Y + 8), DI_SCREEN_LEFT_BOTTOM, statsAlpha);
 				else
 					DrawString(mSmallFontMono, itemsStr..":", statsPos, DI_SCREEN_LEFT_BOTTOM, Font.CR_RED, statsAlpha);
-				DrawString(mSmallFont, mapItems, (statsPos.X + 16, statsPos.Y),
-						   DI_SCREEN_LEFT_BOTTOM, mapItems100 ? Font.CR_GOLD : Font.CR_GREEN, statsAlpha);
+				DrawString(mSmallFont, mapItems, (statsPos.X + 16, statsPos.Y), DI_SCREEN_LEFT_BOTTOM, mapItemsColor, statsAlpha);
 				statsPos.Y -= statsPosYIncrement;
 			}
 			
-			if ( altHudStatsKills )
+			if ( altHUDStatsKills )
 			{
-				if ( !altHudStatsKillsNotNm || skill != 4 )
+				if ( !altHUDStatsKillsNotNm || skill != 4 )
 				{
 					int mapMonstersKilled = Level.Killed_Monsters;
 					int mapMonstersTotal = Level.Total_Monsters;
+					int mapMonstersColor = mapMonstersKilled == mapMonstersTotal ? Font.CR_GOLD : Font.CR_GREEN;
 					String monstersStr = StringTable.Localize("$WF_HUD_STATS_MONSTERS");
 					String mapMonsters = mapMonstersKilled.."/"..mapMonstersTotal;
-					let mapMonsters100 = mapMonstersKilled == mapMonstersTotal;
-					if ( altHudStatsIcons )
+					if ( altHUDStatsIcons )
 						DrawImage("KILLS", (statsPos.X + 4, statsPos.Y + 8), DI_SCREEN_LEFT_BOTTOM, statsAlpha);
 					else
 						DrawString(mSmallFontMono, monstersStr..":", statsPos, DI_SCREEN_LEFT_BOTTOM, Font.CR_RED, statsAlpha);
-					DrawString(mSmallFont, mapMonsters, (statsPos.X + 16, statsPos.Y),
-							   DI_SCREEN_LEFT_BOTTOM, mapMonsters100 ? Font.CR_GOLD : Font.CR_GREEN, statsAlpha);
+					DrawString(mSmallFont, mapMonsters, (statsPos.X + 16, statsPos.Y), DI_SCREEN_LEFT_BOTTOM, mapMonstersColor, statsAlpha);
 					statsPos.Y -= statsPosYIncrement;
 				}
 			}
@@ -530,13 +489,13 @@ extend class WadFusionStatusBar
 		// Draw time
 		int infoOffset = 0;
 		
-		if ( !altHudInfoDontOffset )
+		if ( !altHUDInfoDontOffset )
 			infoOffset = ultraWide;
 		
 		Vector2 infoPos = (-4 - infoOffset, 0);
 		int infoPosYIncrement = 9;
 		
-		if ( altHudInfoTime )
+		if ( altHUDInfoTime )
 		{
 			int timeTicks = Level.Time;
 			int timeSeconds = Thinker.Tics2Seconds(timeTicks);
@@ -545,15 +504,16 @@ extend class WadFusionStatusBar
 			int seconds =  timeSeconds % 60;
 			int millis  = (timeTicks % GameTicRate) * 1000 / GameTicRate;
 			String timeString = String.Format("%02i:%02i:%02i", hours, minutes, seconds);
-			String timeMillisString = String.Format(timeString..".%03i", millis);
+			if ( altHUDInfoTimeMillis )
+				timeString = String.Format(timeString..".%03i", millis);
 			let mapParTime = ( timeSeconds < Level.ParTime ) && Level.ParTime > 0;
-			DrawString(mSmallFontMono, altHudInfoTimeMillis ? timeMillisString : timeString, infoPos,
-					   DI_SCREEN_RIGHT_TOP|DI_TEXT_ALIGN_RIGHT, mapParTime ? Font.CR_GOLD : Font.CR_WHITE, infoAlpha);
+			int timeColor = mapParTime ? Font.CR_GOLD : Font.CR_WHITE;
+			DrawString(mSmallFontMono, timeString, infoPos, DI_SCREEN_RIGHT_TOP|DI_TEXT_ALIGN_RIGHT, timeColor, infoAlpha);
 			infoPos.Y += infoPosYIncrement;
 		}
 		
 		// Draw total time
-		if ( altHudInfoTotalTime )
+		if ( altHUDInfoTotalTime )
 		{
 			int timeTicks = Level.TotalTime;
 			int timeSeconds = Thinker.Tics2Seconds(timeTicks);
@@ -562,28 +522,28 @@ extend class WadFusionStatusBar
 			int seconds =  timeSeconds % 60;
 			int millis  = (timeTicks % GameTicRate) * 1000 / GameTicRate;
 			String timeString = String.Format("%02i:%02i:%02i", hours, minutes, seconds);
-			String timeMillisString = String.Format(timeString..".%03i", millis);
-			DrawString(mSmallFontMono, altHudInfoTimeMillis ? timeMillisString : timeString, infoPos,
-					   DI_SCREEN_RIGHT_TOP|DI_TEXT_ALIGN_RIGHT, Font.CR_WHITE, infoAlpha);
+			if ( altHUDInfoTimeMillis )
+				timeString = String.Format(timeString..".%03i", millis);
+			DrawString(mSmallFontMono, timeString, infoPos, DI_SCREEN_RIGHT_TOP|DI_TEXT_ALIGN_RIGHT, Font.CR_WHITE, infoAlpha);
 			infoPos.Y += infoPosYIncrement;
 		}
 		
 		// Draw map name
-		if ( altHudInfoMapLabel && altHudInfoMapName )
+		if ( altHUDInfoMapLabel && altHUDInfoMapName )
 		{
 			String mapFullName = Level.MapName..": \cj"..Level.LevelName;
 			DrawString(mSmallFont, mapFullName, infoPos, DI_SCREEN_RIGHT_TOP|DI_TEXT_ALIGN_RIGHT, Font.CR_RED, infoAlpha);
 		}
-		else if ( altHudInfoMapLabel )
+		else if ( altHUDInfoMapLabel )
 			DrawString(mSmallFont, Level.MapName, infoPos, DI_SCREEN_RIGHT_TOP|DI_TEXT_ALIGN_RIGHT, Font.CR_RED, infoAlpha);
-		else if ( altHudInfoMapName )
+		else if ( altHUDInfoMapName )
 			DrawString(mSmallFont, Level.LevelName, infoPos, DI_SCREEN_RIGHT_TOP|DI_TEXT_ALIGN_RIGHT, Font.CR_WHITE, infoAlpha);
 		
-		if ( altHudInfoMapLabel || altHudInfoMapName )
+		if ( altHUDInfoMapLabel || altHUDInfoMapName )
 			infoPos.Y += infoPosYIncrement;
 		
 		// Draw map author name
-		if ( altHudInfoMapAuthor && Level.AuthorName != "" )
+		if ( altHUDInfoMapAuthor && Level.AuthorName != "" )
 		{
 			String mapAuthorName = StringTable.Localize(Level.AuthorName);
 			DrawString(mSmallFont, mapAuthorName, infoPos, DI_SCREEN_RIGHT_TOP|DI_TEXT_ALIGN_RIGHT, Font.CR_WHITE, infoAlpha);
@@ -591,10 +551,18 @@ extend class WadFusionStatusBar
 		}
 		
 		// Draw skill
-		if ( !deathmatch && altHudInfoSkill )
+		if ( !deathmatch && altHUDInfoSkill )
 		{
 			String skillStr = StringTable.Localize("$WF_HUD_STATS_SKILL");
 			String skillName = "";
+			
+			let mlRejects = CVar.FindCVar("wf_map_mlr").GetBool();
+			String mlMap = mapName.Mid(6);
+			let mlCabalMap = mlMap == "19" || mlMap == "37" || mlMap == "38" ||
+							 mlMap == "39" || mlMap == "20" || mlMap == "40" ||
+							 mlMap == "18" || mlMap == "41" || mlMap == "42" ||
+							 mlMap == "10" || mlMap == "43" || mlMap == "21";
+			let isCabal = mlRejects && mapName.Left(6) == "ml_map" && mlCabalMap;
 			
 			switch ( skill )
 			{
@@ -602,13 +570,13 @@ extend class WadFusionStatusBar
 					skillName = StringTable.Localize("$SKILL_BABY");
 					break;
 				case 1:
-					skillName = isCabal ? StringTable.Localize("$SKILL_NORMAL") : StringTable.Localize("$SKILL_EASY");
+					skillName = !isCabal ? StringTable.Localize("$SKILL_EASY") : StringTable.Localize("$SKILL_NORMAL");
 					break;
 				case 2:
-					skillName = isCabal ? StringTable.Localize("$SKILL_HARD") : StringTable.Localize("$SKILL_NORMAL");
+					skillName = !isCabal ? StringTable.Localize("$SKILL_NORMAL") : StringTable.Localize("$SKILL_HARD");
 					break;
 				case 3:
-					skillName = isCabal ? StringTable.Localize("$WF_SKILL_CARNAGE") : StringTable.Localize("$SKILL_HARD");
+					skillName = !isCabal ? StringTable.Localize("$SKILL_HARD") : StringTable.Localize("$WF_SKILL_CARNAGE");
 					break;
 				case 4:
 					skillName = StringTable.Localize("$SKILL_NIGHTMARE");
@@ -621,5 +589,77 @@ extend class WadFusionStatusBar
 			DrawString(mSmallFont, skillName, infoPos, DI_SCREEN_RIGHT_TOP|DI_TEXT_ALIGN_RIGHT, Font.CR_WHITE, infoAlpha);
 			infoPos.Y += infoPosYIncrement;
 		}
+	}
+	
+	int GetHealthColor()
+	{
+		int healthColor = Font.CR_UNTRANSLATED;
+		int health = CPlayer.Health;
+		int maxHealth = CPlayer.mo.GetMaxHealth(true);
+		
+		healthColor =
+			health > maxhealth * 2    ? Font.CR_PURPLE :
+			health > maxhealth * 1.5  ? Font.CR_BLUE :
+			health > maxhealth * 1    ? Font.CR_CYAN :
+			health > maxhealth * 0.75 ? Font.CR_GREEN :
+			health > maxhealth * 0.5  ? Font.CR_YELLOW :
+			health > maxhealth * 0.25 ? Font.CR_ORANGE :
+			health > maxhealth * 0    ? Font.CR_RED :
+			Font.CR_BLACK;
+		
+		return healthColor;
+	}
+	
+	int GetArmorColor()
+	{
+		int armorColor = Font.CR_UNTRANSLATED;
+		let armor = CPlayer.mo.FindInventory("BasicArmor");
+		
+		armorColor =
+			armor.Amount > 200 ? Font.CR_PURPLE :
+			armor.Amount > 150 ? Font.CR_BLUE :
+			armor.Amount > 100 ? Font.CR_CYAN :
+			armor.Amount > 75  ? Font.CR_GREEN :
+			armor.Amount > 50  ? Font.CR_YELLOW :
+			armor.Amount > 25  ? Font.CR_ORANGE :
+			armor.Amount > 0   ? Font.CR_RED :
+			Font.CR_BLACK;
+		
+		return armorColor;
+	}
+	
+	int GetAmmoColor(bool secondaryAmmo)
+	{
+		int ammoColor = Font.CR_UNTRANSLATED;
+		Inventory ammoType1, ammoType2;
+		[ammoType1, ammoType2] = GetCurrentAmmo();
+		let currentAmmo = !secondaryAmmo ? ammoType1 : ammoType2;
+		let hasBackpack = CPlayer.mo.FindInventory("Backpack");
+		int ammoLow = currentAmmo.MaxAmount / ( hasBackpack ? 8 : 4 );
+		
+		ammoColor =
+			currentAmmo.Amount == currentAmmo.MaxAmount ? Font.CR_YELLOW :
+			currentAmmo.Amount >  ammoLow               ? Font.CR_WHITE :
+			currentAmmo.Amount >  0                     ? Font.CR_RED :
+			Font.CR_BLACK;
+		
+		return ammoColor;
+	}
+	
+	int GetAmmoBarColor(Name ammoType)
+	{
+		int ammoBarColor = Font.CR_UNTRANSLATED;
+		int ammoAmount, ammoAmountMax;
+		[ammoAmount, ammoAmountMax] = GetAmount(ammoType);
+		let hasBackpack = CPlayer.mo.FindInventory("Backpack");
+		int ammoLow = ammoAmountMax / ( hasBackpack ? 8 : 4 );
+		
+		ammoBarColor =
+			ammoAmount == ammoAmountMax ? Font.CR_GOLD :
+			ammoAmount >  ammoLow       ? Font.CR_WHITE :
+			ammoAmount >  0             ? Font.CR_RED :
+			Font.CR_BLACK;
+		
+		return ammoBarColor;
 	}
 }

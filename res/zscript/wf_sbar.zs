@@ -234,7 +234,7 @@ class WadFusionStatusBar : BaseStatusBar
 
 	protected void DrawFullScreenStuff ()
 	{
-		let altHud = CVar.FindCVar("wf_hud_alt").GetFloat();
+		let altFusionHUD = CVar.FindCVar("wf_hud_alt").GetFloat();
 		let hudSwapHealthArmor = CVar.FindCVar("wf_hud_swaphealtharmor").GetBool();
 		
 		int ultraWide = CVar.FindCVar("wf_hud_ultrawide").GetInt();
@@ -242,7 +242,7 @@ class WadFusionStatusBar : BaseStatusBar
 			ultraWide = 0;
 		
 		// Draw original fullscreen HUD
-		if ( !altHud )
+		if ( !altFusionHUD )
 		{
 			Vector2 iconbox = (40, 20);
 			// Draw health
