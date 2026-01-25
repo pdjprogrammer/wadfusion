@@ -15,7 +15,6 @@ xcopy /E res\*.* dist\res\
 xcopy README.md dist\
 xcopy CHANGES.md dist\
 xcopy %PROJ_NAME%.py dist\
-xcopy %PROJ_NAME%_data.py dist\
 xcopy source_wads\place_wads_here.txt dist\source_wads\
 xcopy %WIDEGFX% dist\
 %ZIP_EXE% a -r -tzip -mx=9 -mm=Deflate dist\licenses.zip .\licenses\*

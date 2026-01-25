@@ -60,7 +60,7 @@ ARGUMENTS = sys.argv[1:]
 VERSION = '1.6.0-dev'
 
 # abspath is used for the sake of the Windows executable
-DATA_TABLES_FILE = path.abspath(path.join(path.dirname(__file__), 'wadfusion_data.py'))
+DATA_TABLES_FILE = path.abspath(path.join(path.dirname(__file__), 'data/wadfusion_data.py'))
 DATA_DIR = path.abspath(path.join(path.dirname(__file__), 'data')) + '/'
 RES_DIR = path.abspath(path.join(path.dirname(__file__), 'res')) + '/'
 SRC_WAD_DIR = 'source_wads/'
@@ -77,9 +77,9 @@ REPORT_WADS = []
 COMMON_LUMPS = []
 DOOM1_LUMPS = []
 DOOM2_LUMPS = []
+ID1_LUMPS = []
 WAD_LUMP_LISTS = {}
 WAD_MAP_PREFIXES = {}
-MAP_NAME_GRAPHICS_DIRS = []
 MASTER_LEVELS_ORDER = []
 MASTER_LEVELS_REJECTS_ORDER = []
 MASTER_LEVELS_PATCHES = {}
