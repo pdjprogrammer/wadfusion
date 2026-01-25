@@ -111,15 +111,14 @@ extend class WadFusionStatusBar
 		
 		// Draw health
 		int hudHealthYOffset = 0;
-		int hudMugshotXOffset = 0;
 		
 		if ( ( hudSwapHealthArmor || !altHUDHealth ) && altHUDArmor )
 			hudHealthYOffset = 27;
 		
-		int health = CPlayer.Health;
-		
 		if ( altHUDHealth )
 		{
+			int health = CPlayer.Health;
+			
 			if ( !altHUDMugshotReplace )
 				DrawImage(hasBerserk ? "PSTRA0" : "MEDIA0", (20 + ultraWide, -10 - hudHealthYOffset), DI_SCREEN_LEFT_BOTTOM, healthAlpha);
 			else
@@ -129,17 +128,11 @@ extend class WadFusionStatusBar
 					   DI_SCREEN_LEFT_BOTTOM|DI_NOSHADOW, GetHealthColor(), healthAlpha);
 		}
 		
-		if ( !altHUDHealth && !altHUDArmor )
-			hudMugshotXOffset = 81;
-		
-		if ( altHUDMugshot )
-			DrawTexture(GetMugShot(5), (84 - hudMugshotXOffset + ultraWide, -35), DI_ITEM_OFFSETS|DI_SCREEN_LEFT_BOTTOM, healthAlpha);
-		
 		// Draw armor
-		let armor     = CPlayer.mo.FindInventory("BasicArmor");
-		
 		if ( altHUDArmor )
 		{
+			let armor = CPlayer.mo.FindInventory("BasicArmor");
+			
 			if ( armor != null && armor.Amount > 0 )
 			{
 				DrawInventoryIcon(armor, (20 + ultraWide, -37 + hudHealthYOffset), DI_SCREEN_LEFT_BOTTOM, healthAlpha);
@@ -148,14 +141,22 @@ extend class WadFusionStatusBar
 			}
 		}
 		
+		// Draw mugshot
+		if ( altHUDMugshot )
+		{
+			int hudMugshotXOffset = 0;
+			
+			if ( !altHUDHealth && !altHUDArmor )
+				hudMugshotXOffset = 81;
+			
+			DrawTexture(GetMugShot(5), (84 - hudMugshotXOffset + ultraWide, -35), DI_ITEM_OFFSETS|DI_SCREEN_LEFT_BOTTOM, healthAlpha);
+		}
+		
 		// Draw keys
-		Vector2 keyInvPos = (-8 - ultraWide, -20);
-		int keyInvPosYIncrement = 8;
 		int ammoInvPosKeysOffset = 0;
 		
 		bool locks[6];
 		bool hasKeys;
-		String keyImage;
 		
 		for ( int i = 0; i < 6; i++ )
 		{
@@ -169,6 +170,11 @@ extend class WadFusionStatusBar
 		
 		if ( !deathmatch && altHUDKeys )
 		{
+			Vector2 keyInvPos = (-8 - ultraWide, -20);
+			int keyInvPosYIncrement = 8;
+			
+			String keyImage = "";
+			
 			// Blue key
 			if ( locks[1] && locks[4] )
 				keyImage = "STKEYS6";
@@ -203,11 +209,10 @@ extend class WadFusionStatusBar
 		}
 		
 		// Draw current ammo
+		Vector2 ammoInvPos = (-4 - ultraWide, -48);
+		
 		Inventory ammotype1, ammotype2;
 		[ammotype1, ammotype2] = GetCurrentAmmo();
-		
-		Vector2 ammoInvPos = (-4 - ultraWide, -48);
-		int ammoInvPosYIncrement = 8;
 		
 		if ( altHUDAmmo )
 		{
@@ -244,6 +249,8 @@ extend class WadFusionStatusBar
 		// Draw ammo pool
 		if ( altHUDAmmoInv )
 		{
+			int ammoInvPosYIncrement = 8;
+			
 			String backpackColor  = hasBackpack ? "\cf" : "\cj";
 			String ammoBulletsStr = backpackColor..StringTable.Localize("$WF_HUD_AMMO_BULLETS");
 			String ammoShellsStr  = backpackColor..StringTable.Localize("$WF_HUD_AMMO_SHELLS");
@@ -316,11 +323,11 @@ extend class WadFusionStatusBar
 		}
 		
 		// Draw powerups
-		Vector2 powerupPos = (-18 - ultraWide, -4 + ammoInvPos.Y);
-		int powerupPosYIncrement = 30;
-		
 		if ( altHUDPowerup )
 		{
+			Vector2 powerupPos = (-18 - ultraWide, -4 + ammoInvPos.Y);
+			int powerupPosYIncrement = 30;
+			
 			string arrayPowerup[4] = { "PowerInvisibility", "PowerInvulnerable", "PowerLightAmp", "PowerIronFeet" };
 			string arrayPowerupImage[4] = { "PINSAHUD", "PINVAHUD", "PVISAHUD", "SUITA0" };
 			
@@ -347,11 +354,11 @@ extend class WadFusionStatusBar
 		}
 		
 		// Draw weapon slots
-		Vector2 weapInvPos = (-17 - ammoInvPosKeysOffset - ultraWide, -8);
-		int weapInvPosXIncrement = 5;
-		
 		if ( altHUDWeapInv )
 		{
+			Vector2 weapInvPos = (-17 - ammoInvPosKeysOffset - ultraWide, -8);
+			int weapInvPosXIncrement = 5;
+			
 			for ( int i = 10; i > 0; i-- )
 			{
 				int slot = i;
@@ -401,9 +408,6 @@ extend class WadFusionStatusBar
 		}
 		
 		// Draw stats
-		Vector2 statsPos = (4 + ultraWide, -72);
-		int statsPosYIncrement = altHUDStatsIcons ? 12 : 9;
-		
 		if ( deathmatch && altHUDFrags )
 		{
 			DrawImage("M_SKULL2", (20 + ultraWide, -64), DI_SCREEN_LEFT_BOTTOM, fragsAlpha);
@@ -412,6 +416,9 @@ extend class WadFusionStatusBar
 		}
 		else if ( !deathmatch )
 		{
+			Vector2 statsPos = (4 + ultraWide, -72);
+			int statsPosYIncrement = altHUDStatsIcons ? 12 : 9;
+			
 			if ( altHUDStatsSecrets )
 			{
 				int mapSectersFound = Level.Found_Secrets;
