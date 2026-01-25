@@ -318,56 +318,31 @@ extend class WadFusionStatusBar
 		// Draw powerups
 		Vector2 powerupPos = (-18 - ultraWide, -4 + ammoInvPos.Y);
 		int powerupPosYIncrement = 30;
-		int powerupTime = 0;
-		int powerupColor = 0;
-		
-		let hasBlurSphere            = Powerup(CPlayer.mo.FindInventory("PowerInvisibility"));
-		let hasInvulnerabilitySphere = Powerup(CPlayer.mo.FindInventory("PowerInvulnerable"));
-		let hasInfrared              = Powerup(CPlayer.mo.FindInventory("PowerLightAmp"));
-		let hasRadSuit               = Powerup(CPlayer.mo.FindInventory("PowerIronFeet"));
 		
 		if ( altHUDPowerup )
 		{
-			if ( hasBlurSphere != null )
-			{
-				powerupTime = int(Ceil(double(hasBlurSphere.EffectTics) / GameTicRate));
-				powerupColor = powerupTime > 4 ? Font.CR_WHITE : Font.CR_DARKRED;
-				DrawImage("PINSAHUD", powerupPos, DI_SCREEN_RIGHT_BOTTOM, powerupAlpha);
-				DrawString(mConFont, FormatNumber(powerupTime, 1), (powerupPos.X, powerupPos.Y - 8),
-						   DI_SCREEN_RIGHT_BOTTOM|DI_TEXT_ALIGN_CENTER, powerupColor, powerupAlpha);
-				powerupPos.Y -= powerupPosYIncrement;
-			}
+			string arrayPowerup[4] = { "PowerInvisibility", "PowerInvulnerable", "PowerLightAmp", "PowerIronFeet" };
+			string arrayPowerupImage[4] = { "PINSAHUD", "PINVAHUD", "PVISAHUD", "SUITA0" };
 			
-			if ( hasInvulnerabilitySphere != null )
-			{
-				powerupTime = int(Ceil(double(hasInvulnerabilitySphere.EffectTics) / GameTicRate));
-				powerupColor = powerupTime > 4 ? Font.CR_WHITE : Font.CR_DARKRED;
-				DrawImage("PINVAHUD", powerupPos, DI_SCREEN_RIGHT_BOTTOM, powerupAlpha);
-				DrawString(mConFont, FormatNumber(powerupTime, 1), (powerupPos.X, powerupPos.Y - 8),
-						   DI_SCREEN_RIGHT_BOTTOM|DI_TEXT_ALIGN_CENTER, powerupColor, powerupAlpha);
-				powerupPos.Y -= powerupPosYIncrement;
-			}
+			int powerupTime = 0;
+			int powerupColor = 0;
 			
-			if ( hasInfrared != null )
+			for ( int i = 0; i < arrayPowerup.Size(); i++ )
 			{
-				powerupTime = int(Ceil(double(hasInfrared.EffectTics) / GameTicRate));
-				powerupColor = powerupTime > 4 ? Font.CR_WHITE : Font.CR_DARKRED;
-				DrawImage("PVISAHUD", powerupPos, DI_SCREEN_RIGHT_BOTTOM, powerupAlpha);
-				DrawString(mConFont, FormatNumber(powerupTime, 1), (powerupPos.X, powerupPos.Y - 8),
-						   DI_SCREEN_RIGHT_BOTTOM|DI_TEXT_ALIGN_CENTER, powerupColor, powerupAlpha);
-				powerupPos.Y -= powerupPosYIncrement;
-			}
-			
-			if ( hasRadSuit != null )
-			{
-				powerupTime = int(Ceil(double(hasRadSuit.EffectTics) / GameTicRate));
-				powerupColor = powerupTime > 4 ? Font.CR_WHITE : Font.CR_DARKRED;
-				if ( hasInfrared )
-					powerupPos.Y += 12;
-				DrawImage("SUITA0", powerupPos, DI_SCREEN_RIGHT_BOTTOM, powerupAlpha);
-				DrawString(mConFont, FormatNumber(powerupTime, 1), (powerupPos.X, powerupPos.Y - 8),
-						   DI_SCREEN_RIGHT_BOTTOM|DI_TEXT_ALIGN_CENTER, powerupColor, powerupAlpha);
-				powerupPos.Y -= powerupPosYIncrement;
+				let hasPowerup = Powerup(CPlayer.mo.FindInventory(arrayPowerup[i]));
+				let hasInfrared = Powerup(CPlayer.mo.FindInventory("PowerLightAmp"));
+				
+				if ( hasPowerup != null )
+				{
+					powerupTime = int(Ceil(double(hasPowerup.EffectTics) / GameTicRate));
+					powerupColor = powerupTime > 4 ? Font.CR_WHITE : Font.CR_DARKRED;
+					DrawImage(arrayPowerupImage[i], powerupPos, DI_SCREEN_RIGHT_BOTTOM, powerupAlpha);
+					DrawString(mConFont, FormatNumber(powerupTime, 1), (powerupPos.X, powerupPos.Y - 8),
+							   DI_SCREEN_RIGHT_BOTTOM|DI_TEXT_ALIGN_CENTER, powerupColor, powerupAlpha);
+					if ( i == 2 )
+						powerupPos.Y += 12;
+					powerupPos.Y -= powerupPosYIncrement;
+				}
 			}
 		}
 		
