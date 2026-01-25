@@ -25,6 +25,7 @@ extend class WadFusionStatusBar
 	{
 		let id1WeapSwap        = CVar.FindCVar("wf_compat_id24_weapons").GetInt() == 1;
 		let id1WeapSwapAlways  = CVar.FindCVar("wf_compat_id24_weapons").GetInt() >= 2;
+		
 		let hudId24            = CVar.FindCVar("wf_hud_id24").GetBool();
 		let hudSwapHealthArmor = CVar.FindCVar("wf_hud_swaphealtharmor").GetBool();
 		
@@ -68,52 +69,13 @@ extend class WadFusionStatusBar
 		
 		String mapName = Level.MapName.MakeLower();
 		
-		let isDoom1    = mapName.Left(1) == "e" && mapName.Mid(2, 1) == "m";
-		let isId1      = mapName.Left(3) == "lr_";
-		
-		let hasBackpack = CPlayer.mo.FindInventory("Backpack");
-		let hasBerserk  = CPlayer.mo.FindInventory("PowerStrength");
-		
-		let hasSuperShotgun = CPlayer.mo.FindInventory("SuperShotgun");
-		let hasIncinerator  = CPlayer.mo.FindInventory("ID24Incinerator");
-		let hasPlasmaRifle  = CPlayer.mo.FindInventory("PlasmaRifle");
-		let hasHeatwave     = CPlayer.mo.FindInventory("ID24CalamityBlade");
-		let hasBfg9000      = CPlayer.mo.FindInventory("BFG9000");
-		
-		let replacedSuperShotgun = Actor.GetReplacement("SuperShotgun")      != "SuperShotgun";
-		let replacedIncinerator  = Actor.GetReplacement("ID24Incinerator")   != "ID24Incinerator";
-		let replacedPlasmaRifle  = Actor.GetReplacement("PlasmaRifle")       != "PlasmaRifle";
-		let replacedHeatwave     = Actor.GetReplacement("ID24CalamityBlade") != "ID24CalamityBlade";
-		let replacedBfg9000      = Actor.GetReplacement("BFG9000")           != "BFG9000";
-		
-		let clip   = CPlayer.mo.FindInventory("Clip");
-		let shell  = CPlayer.mo.FindInventory("Shell");
-		let rocket = CPlayer.mo.FindInventory("RocketAmmo");
-		let cell   = CPlayer.mo.FindInventory("Cell");
-		let fuel   = CPlayer.mo.FindInventory("ID24Fuel");
-		
-		int clipLow   = 0;
-		int shellLow  = 0;
-		int rocketLow = 0;
-		int cellLow   = 0;
-		int fuelLow   = 0;
-		
-		if ( clip != null )
-			clipLow = clip.MaxAmount / ( hasBackpack ? 8 : 4 );
-		if ( shell != null )
-			shellLow = shell.MaxAmount / ( hasBackpack ? 8 : 4 );
-		if ( rocket != null )
-			rocketLow = rocket.MaxAmount / ( hasBackpack ? 8 : 4 );
-		if ( cell != null )
-			cellLow = cell.MaxAmount / ( hasBackpack ? 8 : 4 );
-		if ( fuel != null )
-			fuelLow = fuel.MaxAmount / ( hasBackpack ? 8 : 4 );
-		
 		// Draw health
 		int hudHealthYOffset = 0;
 		
 		if ( ( hudSwapHealthArmor || !altHUDHealth ) && altHUDArmor )
 			hudHealthYOffset = 27;
+		
+		let hasBerserk = CPlayer.mo.FindInventory("PowerStrength");
 		
 		if ( altHUDHealth )
 		{
@@ -198,6 +160,75 @@ extend class WadFusionStatusBar
 				DrawImage(keyImage, keyInvPos, DI_SCREEN_RIGHT_BOTTOM, keysAlpha);
 		}
 		
+		// Draw weapon slots
+		let hasIncinerator  = CPlayer.mo.FindInventory("ID24Incinerator");
+		let hasPlasmaRifle  = CPlayer.mo.FindInventory("PlasmaRifle");
+		let hasHeatwave     = CPlayer.mo.FindInventory("ID24CalamityBlade");
+		let hasBfg9000      = CPlayer.mo.FindInventory("BFG9000");
+		let isId1           = mapName.Left(3) == "lr_";
+		
+		if ( altHUDWeapInv )
+		{
+			Vector2 weapInvPos = (-3 - ultraWide, -8);
+			int weapInvPosXIncrement = 5;
+			
+			for ( int i = 10; i > 0; i-- )
+			{
+				int slot = i;
+				
+				if ( i == 10 )
+					slot = 0;
+				
+				String slotStr = String.Format("%d", slot);
+				
+				for ( int j = CPlayer.Weapons.SlotSize(slot); j >= 0; j-- )
+				{
+					let getWeaponSlot      = CPlayer.Weapons.GetWeapon(slot, j);
+					let slotFistBerserk    = getWeaponSlot == "Fist" && hasBerserk;
+					let slotSuperShotgun   = getWeaponSlot == "SuperShotgun";
+					let slotIncinerator    = getWeaponSlot == "ID24Incinerator";
+					let slotPlasmaRifle    = getWeaponSlot == "PlasmaRifle";
+					let slotHeatwave       = getWeaponSlot == "ID24CalamityBlade";
+					let slotBfg9000        = getWeaponSlot == "BFG9000";
+					let weaponSlotReplaced = getWeaponSlot != null && Actor.GetReplacee(getWeaponSlot) != getWeaponSlot;
+					
+					let replacedSuperShotgun = Actor.GetReplacement("SuperShotgun")      != "SuperShotgun";
+					let replacedIncinerator  = Actor.GetReplacement("ID24Incinerator")   != "ID24Incinerator";
+					let replacedPlasmaRifle  = Actor.GetReplacement("PlasmaRifle")       != "PlasmaRifle";
+					let replacedHeatwave     = Actor.GetReplacement("ID24CalamityBlade") != "ID24CalamityBlade";
+					let replacedBfg9000      = Actor.GetReplacement("BFG9000")           != "BFG9000";
+					
+					let weapReady        = CPlayer.ReadyWeapon;
+					let weapInvReady     = weapReady != null && getWeaponSlot == weapReady.GetClassName();
+					let weapInvColor     = slotFistBerserk ? Font.CR_RED : ( weapInvReady ? Font.CR_GOLD : Font.CR_WHITE);
+					let weapInvAlphaType = weapInvReady ? weapInvAlpha : weapInvAlpha * 0.2;
+					
+					let hasSuperShotgun = CPlayer.mo.FindInventory("SuperShotgun");
+					let isDoom1         = mapName.Left(1) == "e" && mapName.Mid(2, 1) == "m";
+					
+					if ( CPlayer.mo.FindInventory(getWeaponSlot) )
+						DrawString(mIndexFont, slotStr, weapInvPos, DI_SCREEN_RIGHT_BOTTOM, weapInvColor, weapInvAlphaType);
+					
+					if ( j > 0 && !weaponSlotReplaced )
+						weapInvPos.X -= weapInvPosXIncrement;
+					
+					if ( slotSuperShotgun && ( isDoom1 && !hasSuperShotgun ) && !replacedSuperShotgun )
+						weapInvPos.X += weapInvPosXIncrement;
+					
+					if ( !hudId24 )
+					{
+						if ( ( slotIncinerator && ( !isId1 && !hasIncinerator ) && !replacedIncinerator ) ||
+							 ( slotPlasmaRifle && ( isId1 && !hasPlasmaRifle ) && !replacedPlasmaRifle ) ||
+							 ( slotHeatwave && ( !isId1 && !hasHeatwave ) && !replacedHeatwave ) ||
+							 ( slotBfg9000 && ( isId1 && !hasBfg9000 ) && !replacedBfg9000 ) )
+						{
+							weapInvPos.X += weapInvPosXIncrement;
+						}
+					}
+				}
+			}
+		}
+		
 		// Draw current ammo
 		Vector2 ammoInvPos = (-4 - ultraWide, -48);
 		
@@ -241,12 +272,30 @@ extend class WadFusionStatusBar
 		{
 			int ammoInvPosYIncrement = 8;
 			
-			String backpackColor  = hasBackpack ? "\cf" : "\cj";
-			String ammoBulletsStr = backpackColor..StringTable.Localize("$WF_HUD_AMMO_BULLETS");
-			String ammoShellsStr  = backpackColor..StringTable.Localize("$WF_HUD_AMMO_SHELLS");
-			String ammoRocketsStr = backpackColor..StringTable.Localize("$WF_HUD_AMMO_ROCKETS");
-			String ammoCellsStr   = backpackColor..StringTable.Localize("$WF_HUD_AMMO_CELLS");
-			String ammoFuelStr    = backpackColor..StringTable.Localize("$WF_HUD_AMMO_FUEL");
+			let hasBackpack = CPlayer.mo.FindInventory("Backpack");
+			
+			let clip   = CPlayer.mo.FindInventory("Clip");
+			let shell  = CPlayer.mo.FindInventory("Shell");
+			let rocket = CPlayer.mo.FindInventory("RocketAmmo");
+			let cell   = CPlayer.mo.FindInventory("Cell");
+			let fuel   = CPlayer.mo.FindInventory("ID24Fuel");
+			
+			int clipLow   = 0;
+			int shellLow  = 0;
+			int rocketLow = 0;
+			int cellLow   = 0;
+			int fuelLow   = 0;
+			
+			if ( clip != null )
+				clipLow = clip.MaxAmount / ( hasBackpack ? 8 : 4 );
+			if ( shell != null )
+				shellLow = shell.MaxAmount / ( hasBackpack ? 8 : 4 );
+			if ( rocket != null )
+				rocketLow = rocket.MaxAmount / ( hasBackpack ? 8 : 4 );
+			if ( cell != null )
+				cellLow = cell.MaxAmount / ( hasBackpack ? 8 : 4 );
+			if ( fuel != null )
+				fuelLow = fuel.MaxAmount / ( hasBackpack ? 8 : 4 );
 			
 			int clipAmount   = clip   != null ? clip.Amount   : 0;
 			int shellAmount  = shell  != null ? shell.Amount  : 0;
@@ -265,6 +314,13 @@ extend class WadFusionStatusBar
 			String rocketAmountStr = rocketColor..String.Format("%03d", rocketAmount);
 			String cellAmountStr   = cellColor  ..String.Format("%03d", cellAmount);
 			String fuelAmountStr   = fuelColor  ..String.Format("%03d", fuelAmount);
+			
+			String backpackColor  = hasBackpack ? "\cf" : "\cj";
+			String ammoBulletsStr = backpackColor..StringTable.Localize("$WF_HUD_AMMO_BULLETS");
+			String ammoShellsStr  = backpackColor..StringTable.Localize("$WF_HUD_AMMO_SHELLS");
+			String ammoRocketsStr = backpackColor..StringTable.Localize("$WF_HUD_AMMO_ROCKETS");
+			String ammoCellsStr   = backpackColor..StringTable.Localize("$WF_HUD_AMMO_CELLS");
+			String ammoFuelStr    = backpackColor..StringTable.Localize("$WF_HUD_AMMO_FUEL");
 			
 			String ammoClipInv   = ammoBulletsStr.." "..clipAmountStr;
 			String ammoShellInv  = ammoShellsStr .." "..shellAmountStr;
@@ -339,60 +395,6 @@ extend class WadFusionStatusBar
 					if ( i == 2 )
 						powerupPos.Y += 12;
 					powerupPos.Y -= powerupPosYIncrement;
-				}
-			}
-		}
-		
-		// Draw weapon slots
-		if ( altHUDWeapInv )
-		{
-			Vector2 weapInvPos = (-3 - ultraWide, -8);
-			int weapInvPosXIncrement = 5;
-			
-			for ( int i = 10; i > 0; i-- )
-			{
-				int slot = i;
-				
-				if ( i == 10 )
-					slot = 0;
-				
-				String slotStr = String.Format("%d", slot);
-				
-				for ( int j = CPlayer.Weapons.SlotSize(slot); j >= 0; j-- )
-				{
-					let getWeaponSlot      = CPlayer.Weapons.GetWeapon(slot, j);
-					let slotFistBerserk    = getWeaponSlot == "Fist" && hasBerserk;
-					let slotSuperShotgun   = getWeaponSlot == "SuperShotgun";
-					let slotIncinerator    = getWeaponSlot == "ID24Incinerator";
-					let slotPlasmaRifle    = getWeaponSlot == "PlasmaRifle";
-					let slotHeatwave       = getWeaponSlot == "ID24CalamityBlade";
-					let slotBfg9000        = getWeaponSlot == "BFG9000";
-					let weaponSlotReplaced = getWeaponSlot != null && Actor.GetReplacee(getWeaponSlot) != getWeaponSlot;
-					
-					let weapReady        = CPlayer.ReadyWeapon;
-					let weapInvReady     = weapReady != null && getWeaponSlot == weapReady.GetClassName();
-					let weapInvColor     = slotFistBerserk ? Font.CR_RED : ( weapInvReady ? Font.CR_GOLD : Font.CR_WHITE);
-					let weapInvAlphaType = weapInvReady ? weapInvAlpha : weapInvAlpha * 0.2;
-					
-					if ( CPlayer.mo.FindInventory(getWeaponSlot) )
-						DrawString(mIndexFont, slotStr, weapInvPos, DI_SCREEN_RIGHT_BOTTOM, weapInvColor, weapInvAlphaType);
-					
-					if ( j > 0 && !weaponSlotReplaced )
-						weapInvPos.X -= weapInvPosXIncrement;
-					
-					if ( slotSuperShotgun && ( isDoom1 && !hasSuperShotgun ) && !replacedSuperShotgun )
-						weapInvPos.X += weapInvPosXIncrement;
-					
-					if ( !hudId24 )
-					{
-						if ( ( slotIncinerator && ( !isId1 && !hasIncinerator ) && !replacedIncinerator ) ||
-							 ( slotPlasmaRifle && ( isId1 && !hasPlasmaRifle ) && !replacedPlasmaRifle ) ||
-							 ( slotHeatwave && ( !isId1 && !hasHeatwave ) && !replacedHeatwave ) ||
-							 ( slotBfg9000 && ( isId1 && !hasBfg9000 ) && !replacedBfg9000 ) )
-						{
-							weapInvPos.X += weapInvPosXIncrement;
-						}
-					}
 				}
 			}
 		}
