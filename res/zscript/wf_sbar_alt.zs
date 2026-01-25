@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------------
 //
 // Copyright 1993-2023 id Software, Randy Heit, Christoph Oelckers et.al.
-// Copyright 2024-2025 Owlet VII
+// Copyright 2024-2026 Owlet VII
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
