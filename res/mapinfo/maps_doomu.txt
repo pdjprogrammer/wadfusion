@@ -12,8 +12,7 @@ defaultmap
 adddefaultmap
 {
 	Sky1 = "SKY4"
-	// deprecated, not used anymore because of full run mode
-	// Cluster = 4
+	Cluster = 4
 	ExitPic = "INTERE4"
 }
 

@@ -37,8 +37,7 @@ map LR_MAP99 "$XHUSTR_99"
 
 adddefaultmap
 {
-	// deprecated, not used anymore because of full run mode
-	// Cluster = 28
+	Cluster = 28
 	ExitPic = "XWIMAP0"
 	EnterPic = "$XWINTER0"
 }

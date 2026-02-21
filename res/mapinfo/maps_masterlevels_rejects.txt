@@ -2,6 +2,7 @@
 
 defaultmap
 {
+	Cluster = 24
 	Sky1 = "SKY1"
 	SuckTime = 1
 	ResetHealth

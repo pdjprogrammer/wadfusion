@@ -14,8 +14,7 @@ defaultmap
 adddefaultmap
 {
 	Sky1 = "SKY1"
-	// deprecated, not used anymore because of full run mode
-	// Cluster = 1
+	Cluster = 1
 	ExitPic = "$IN_EPI1"
 }
 
@@ -122,8 +121,7 @@ map E1M9 "$HUSTR_E1M9"
 adddefaultmap
 {
 	Sky1 = "SKY2"
-	// deprecated, not used anymore because of full run mode
-	// Cluster = 2
+	Cluster = 2
 	ExitPic = "$IN_EPI2"
 }
 

@@ -1,6 +1,11 @@
 // dummy Master Levels for Doom 2 story maps
 // needed for the zscript-based intermission hacks
 
+defaultmap
+{
+	Cluster = 24
+}
+
 adddefaultmap
 {
 	Author = "$WF_AU_FLYNN"

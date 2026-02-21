@@ -2,6 +2,7 @@
 
 defaultmap
 {
+	Cluster = 24
 	Sky1 = "SKY3"
 	SuckTime = 1
 	Author = "$WF_AU_KVERNMO"

@@ -1,22 +1,26 @@
 // Clusters
 
 
+// some cluster definitions were deprecated by zscript initialised intermissions
+// they still get defined here with commented out properties
+// this is needed for the sake of compatibility with mods that may rely on them
+
 // Doom 1 Clusters (correspond with same-numbered episode)
 
-// deprecated, not used anymore because of full run mode
+// deprecated
 cluster 1
 {
-	ExitText = "$E1TEXT"
-	Music = "$MUSIC_VICTOR"
-	Flat = "$bgflatE1"
+	// ExitText = "$E1TEXT"
+	// Music = "$MUSIC_VICTOR"
+	// Flat = "$bgflatE1"
 }
 
-// deprecated, not used anymore because of full run mode
+// deprecated
 cluster 2
 {
-	ExitText = "$E2TEXT"
-	Music = "$MUSIC_VICTOR"
-	Flat = "$bgflatE2"
+	// ExitText = "$E2TEXT"
+	// Music = "$MUSIC_VICTOR"
+	// Flat = "$bgflatE2"
 }
 
 cluster 3
@@ -26,12 +30,12 @@ cluster 3
 	Flat = "$bgflatE3"
 }
 
-// deprecated, not used anymore because of full run mode
+// deprecated
 cluster 4
 {
-	ExitText = "$E4TEXT"
-	Music = "$MUSIC_VICTOR"
-	Flat = "$bgflatE4"
+	// ExitText = "$E4TEXT"
+	// Music = "$MUSIC_VICTOR"
+	// Flat = "$bgflatE4"
 }
 
 // DOOM II first cluster (up thru level 6)
@@ -207,12 +211,12 @@ cluster 23
 
 // Master Levels clusters
 
-// deprecated, not used anymore because of full run mode and togglable map order
+// deprecated
 cluster 24
 {
-	ExitText = "$MLEND"
-	Music = "$MUSIC_READ_M"
-	Flat = "$BGFLAT06"
+	// ExitText = "$MLEND"
+	// Music = "$MUSIC_READ_M"
+	// Flat = "$BGFLAT06"
 }
 
 cluster 25
@@ -224,32 +228,32 @@ cluster 25
 
 // Sigil 1 cluster
 
-// deprecated, not used anymore because of full run mode
+// deprecated
 cluster 26
 {
-	Flat = "FLOOR7_2"
-	Music = "$MUSIC_VICTOR"
-	ExitText = "$E5TEXT"
+	// Flat = "FLOOR7_2"
+	// Music = "$MUSIC_VICTOR"
+	// ExitText = "$E5TEXT"
 }
 
 // Sigil 2 cluster
 
-// deprecated, not used anymore because of full run mode
+// deprecated
 cluster 27
 {
-	Flat = "FLOOR7_2"
-	Music = "$MUSIC_VICTOR"
-	ExitText = "$E6TEXT"
+	// Flat = "FLOOR7_2"
+	// Music = "$MUSIC_VICTOR"
+	// ExitText = "$E6TEXT"
 }
 
 // Legacy of Rust Episode 1 cluster
 
-// deprecated, not used anymore because of full run mode
+// deprecated
 cluster 28
 {
-	ExitText = "$INTERTEXT_ID1_E1"
-	Music = "D_SHORES"
-	Flat = "SLIME20"
+	// ExitText = "$INTERTEXT_ID1_E1"
+	// Music = "D_SHORES"
+	// Flat = "SLIME20"
 }
 
 // Legacy of Rust Episode 2 cluster
@@ -273,7 +277,7 @@ cluster 30
 cluster 31
 {
 	EnterText = "$E1M8BTEXT"
-	// deprecated, not used anymore because of full run mode
+	// deprecated by full run mode, the exit flat should be different from the enter flat anyway
 	// ExitText = "$E1TEXT"
 	Music = "$MUSIC_VICTOR"
 	Flat = "$FLOOR5_1"

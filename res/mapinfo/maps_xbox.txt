@@ -9,8 +9,7 @@ map E1M10 "$HUSTR_E1M10"
 {
 	LevelNum = 10
 	Next = "E1M2"
-	// deprecated, not used anymore because of full run mode
-	// Cluster = 1
+	Cluster = 1
 	// The sky gets replaced by texture substitution compatibility options
 	Sky1 = "SKY3"
 	TitlePatch = "WILV39", 1
