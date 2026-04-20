@@ -230,7 +230,7 @@ extend class WadFusionStatusBar
 		}
 		
 		// Draw current ammo
-		Vector2 ammoInvPos = (-4 - ultraWide, -48);
+		Vector2 ammoInvPos = (-4 - ultraWide, -21);
 		
 		Inventory ammotype1, ammotype2;
 		[ammotype1, ammotype2] = GetCurrentAmmo();
@@ -238,12 +238,21 @@ extend class WadFusionStatusBar
 		if ( altHUDAmmo )
 		{
 			int invY = -25;
+			
+			let showInvSel = !isInventoryBarVisible() && !Level.NoInventoryBar && CPlayer.mo.InvSel != null;
+			
+			if ( ammotype1 == null && ammotype2 == null && !showInvSel )
+			{
+				ammoInvPos.Y -= 10;
+			}
+			
 			if ( ammotype1 != null )
 			{
 				DrawInventoryIcon(ammotype1, (-14 - ultraWide, -10), DI_SCREEN_RIGHT_BOTTOM, ammoAlpha);
 				DrawString(mHUDFont, FormatNumber(ammotype1.Amount, 1), (-30 - ultraWide, -25),
 						   DI_SCREEN_RIGHT_BOTTOM|DI_TEXT_ALIGN_RIGHT|DI_NOSHADOW, GetAmmoColor(0), ammoAlpha);
 				invY -= 27;
+				ammoInvPos.Y -= 27;
 			}
 			
 			if ( ammotype2 != null && ammotype2 != ammotype1 )
@@ -255,7 +264,7 @@ extend class WadFusionStatusBar
 				ammoInvPos.Y -= 27;
 			}
 			
-			if ( !isInventoryBarVisible() && !Level.NoInventoryBar && CPlayer.mo.InvSel != null )
+			if ( showInvSel )
 			{
 				DrawInventoryIcon(CPlayer.mo.InvSel, (-14 - ultraWide, invY + 15), DI_DIMDEPLETED|DI_SCREEN_RIGHT_BOTTOM, ammoAlpha);
 				DrawString(mHUDFont, FormatNumber(CPlayer.mo.InvSel.Amount, 1), (-30 - ultraWide, invY),
