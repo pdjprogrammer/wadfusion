@@ -42,7 +42,7 @@
   credits menus.
 - Removed superfluous and hacky controller support from the credits menus.
   - Menus can be scrolled natively with the L1 and R1 controller buttons.
-- Removed the ENDOOM screen.
+- Replaced the ENDOOM screen.
 - Added an option to view all the "Help" screens.
 - Added "ID24 status bars" compatibility option.
 - Added an option to show both the medikit and the mug shot in the alternate

@@ -1,6 +1,6 @@
 ##-----------------------------------------------------------------------------
 ##
-## Copyright 2024-2025 Owlet VII
+## Copyright 2024-2026 Owlet VII
 ##
 ## This program is free software: you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -199,7 +199,7 @@ RES_FILES = [
     'zscript/wf_story.zs',
     'zscript/wf_map_fixes.zs',
     'zscript/wf_defaults.zs',
-    'wadfused.txt'
+    'endoom.bin', 'wadfused.txt'
 ]
 
 # list of files we can extract from
