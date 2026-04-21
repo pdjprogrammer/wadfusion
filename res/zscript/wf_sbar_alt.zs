@@ -312,11 +312,11 @@ extend class WadFusionStatusBar
 			int cellAmount   = cell   != null ? cell.Amount   : 0;
 			int fuelAmount   = fuel   != null ? fuel.Amount   : 0;
 			
-			String clipColor   = clipAmount   > 0 ? ( clipAmount   > clipLow   ? "\cj" : "\cg" ) : "\cm";
-			String shellColor  = shellAmount  > 0 ? ( shellAmount  > shellLow  ? "\cj" : "\cg" ) : "\cm";
-			String rocketColor = rocketAmount > 0 ? ( rocketAmount > rocketLow ? "\cj" : "\cg" ) : "\cm";
-			String cellColor   = cellAmount   > 0 ? ( cellAmount   > cellLow   ? "\cj" : "\cg" ) : "\cm";
-			String fuelColor   = fuelAmount   > 0 ? ( fuelAmount   > fuelLow   ? "\cj" : "\cg" ) : "\cm";
+			String clipColor   = GetAmmoBarColor("Clip");
+			String shellColor  = GetAmmoBarColor("Shell");
+			String rocketColor = GetAmmoBarColor("RocketAmmo");
+			String cellColor   = GetAmmoBarColor("Cell");
+			String fuelColor   = GetAmmoBarColor("ID24Fuel");
 			
 			String clipAmountStr   = clipColor  ..String.Format("%03d", clipAmount);
 			String shellAmountStr  = shellColor ..String.Format("%03d", shellAmount);
@@ -383,8 +383,8 @@ extend class WadFusionStatusBar
 			Vector2 powerupPos = (-18 - ultraWide, -4 + ammoInvPos.Y);
 			int powerupPosYIncrement = 30;
 			
-			string arrayPowerup[4] = { "PowerInvisibility", "PowerInvulnerable", "PowerLightAmp", "PowerIronFeet" };
-			string arrayPowerupImage[4] = { "PINSAHUD", "PINVAHUD", "PVISAHUD", "SUITA0" };
+			String arrayPowerup[4] = { "PowerInvisibility", "PowerInvulnerable", "PowerLightAmp", "PowerIronFeet" };
+			String arrayPowerupImage[4] = { "PINSAHUD", "PINVAHUD", "PVISAHUD", "SUITA0" };
 			
 			int powerupTime = 0;
 			int powerupColor = 0;
@@ -629,19 +629,22 @@ extend class WadFusionStatusBar
 		return ammoColor;
 	}
 	
-	int GetAmmoBarColor(Name ammoType)
+	String GetAmmoBarColor(Name ammoType)
 	{
-		int ammoBarColor = Font.CR_UNTRANSLATED;
-		int ammoAmount, ammoAmountMax;
-		[ammoAmount, ammoAmountMax] = GetAmount(ammoType);
-		let hasBackpack = CPlayer.mo.FindInventory("Backpack");
-		int ammoLow = ammoAmountMax / ( hasBackpack ? 8 : 4 );
-		
-		ammoBarColor =
-			ammoAmount == ammoAmountMax ? Font.CR_GOLD :
-			ammoAmount >  ammoLow       ? Font.CR_WHITE :
-			ammoAmount >  0             ? Font.CR_RED :
-			Font.CR_BLACK;
+		String ammoBarColor = "\cl";
+		if ( CPlayer.mo.FindInventory(ammoType) != null )
+		{
+			int ammoAmount, ammoAmountMax = 0;
+			[ammoAmount, ammoAmountMax] = GetAmount(ammoType);
+			let hasBackpack = CPlayer.mo.FindInventory("Backpack");
+			int ammoLow = ammoAmountMax / ( hasBackpack ? 8 : 4 );
+			
+			ammoBarColor =
+				ammoAmount == ammoAmountMax ? "\cf" :
+				ammoAmount >  ammoLow       ? "\cj" :
+				ammoAmount >  0             ? "\cg" :
+				"\cm";
+		}
 		
 		return ammoBarColor;
 	}
