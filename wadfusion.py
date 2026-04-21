@@ -1,6 +1,6 @@
 ##-----------------------------------------------------------------------------
 ##
-## Copyright 2024-2025 Owlet VII
+## Copyright 2024-2026 Owlet VII
 ##
 ## This program is free software: you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -48,14 +48,12 @@
 ##------------------------------------------------------------------------------------------
 ##
 
-import platform, os, sys, time, fnmatch
+import platform, os, sys, time, fnmatch, argparse
 from shutil import copyfile, rmtree
 from zipfile import ZipFile, ZIP_DEFLATED, ZIP_STORED
 from os import path
 
 import omg
-
-ARGUMENTS = sys.argv[1:]
 
 VERSION = '1.6.0-dev'
 
@@ -106,41 +104,32 @@ num_maps = 0
 num_eps = 0
 num_errors = 0
 
-def print_help():
-    for i in ARGUMENTS:
-        if i == '-h' or i == '--help':
-            print('Usage: ' + os.path.basename(__file__) + ' [OPTIONS]\n')
-            print('Options:\n')
-            print('  -h, --help            Show this help message.')
-            print('  -v, --verbose         Print out all the logged information.')
-            print('  -p, --patch           Patch an existing IPK3 without extracting WADs.')
-            print('  -d, --deflate         Use DEFLATE compression when generating the IPK3.')
-            print('  -e, --extract-only    Skip copying pre-authored lumps and only extract WADs (for developers).')
-            input('')
-            return True
-    return False
+parser = argparse.ArgumentParser()
+parser.add_argument('--version', action='version', version='WadFusion v%s' % VERSION)
+parser.add_argument('-v', '--verbose', help='Print out all the logged information.', action='store_true')
+parser.add_argument('-p', '--patch', help='Patch an existing IPK3 without extracting WADs.', action='store_true')
+parser.add_argument('-d', '--deflate', help='Use DEFLATE compression when generating the IPK3.', action='store_true')
+parser.add_argument('-e', '--extract-only', help='Skip copying pre-authored lumps and only extract WADs (for developers).', action='store_true')
+args = parser.parse_args()
 
 def should_deflate():
-    for i in ARGUMENTS:
-        if i == '-d' or i == '--deflate':
-            return True
+    if args.deflate:
+        return True
     return False
 
 def should_patch():
-    for i in ARGUMENTS:
-        if i == '-p' or i == '--patch':
-            # bail if no ipk3 was found
-            if not os.path.isfile(DEST_FILENAME):
-                logg('No IPK3 found to patch!\n')
-                continue
-            return True
+    if args.patch:
+        # bail if no ipk3 was found
+        if not os.path.isfile(DEST_FILENAME):
+            logg('No IPK3 found to patch!\n')
+            return False
+        return True
     return False
 
 def skip_resources():
-    for i in ARGUMENTS:
-        if i == '-e' or i == '--extract-only':
-            logs('Skipping pre-authored lumps!')
-            return True
+    if args.extract_only:
+        logs('Skipping pre-authored lumps!')
+        return True
     return False
 
 def logg(line, error=False):
@@ -156,10 +145,8 @@ def logs(line, error=False):
     global logfile, num_errors
     if not logfile:
         logfile = open(LOG_FILENAME, 'w', encoding='utf-8')
-    for i in ARGUMENTS:
-        if i == '-v' or i == '--verbose':
-            print(line)
-            break
+    if args.verbose:
+        print(line)
     logfile.write(line + '\n')
     if error:
         num_errors += 1
@@ -903,20 +890,17 @@ def pk3_patch():
 
 def main():
     global num_maps, num_eps
-    # print help and bail
-    if print_help():
-        return
     # log python and os version
     logs(sys.version)
     logs(platform.system() + ' ' + os.name + ' ' + sys.platform + ' ' + platform.release())
     logs(platform.version())
     logs(platform.platform() + '\n')
     # log used command line arguments
-    arguments_str = ''
-    for i in ARGUMENTS:
-        arguments_str += i + ' '
-    if arguments_str != '':
-        logs('Command line arguments used: ' + arguments_str + '\n')
+    args_str = ''
+    for i in sys.argv[1:]:
+        args_str += i + ' '
+    if args_str != '':
+        logs('Command line arguments used: ' + args_str + '\n')
     # clear out pk3 dir from previous runs
     clear_temp()
     title_line = 'WadFusion v%s' % VERSION

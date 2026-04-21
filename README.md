@@ -18,7 +18,8 @@ Also included is a file called `doom_fusion_widescreen_gfx.pk3`, which adds supe
 
 WadFusion can be launched with the following command line arguments:
 
-- `-h`, `--help` — Show the help message.
+- `-h`, `--help` — Show the help message and exit.
+- `--version` —  Show program's version number and exit.
 - `-v`, `--verbose` — Print out all the logged information.
 - `-p`, `--patch` — Patch an existing IPK3 without extracting WADs.
 - `-d`, `--deflate` — Use DEFLATE compression when generating the IPK3.
