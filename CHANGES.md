@@ -42,6 +42,8 @@
   credits menus.
 - Removed superfluous and hacky controller support from the credits menus.
   - Menus can be scrolled natively with the L1 and R1 controller buttons.
+- Renamed "Xbox Port Level Designers" credits to "Additional Level Designers".
+- Removed the forced "NoJump" and "NoCrouch" properties from all maps.
 - Replaced the ENDOOM screen.
 - Added an option to view all the "Help" screens.
 - Added "ID24 status bars" compatibility option.
@@ -61,6 +63,13 @@
 - Updated Polish localisation (machine translation).
 - Combined the transparency options for some alternate fullscreen HUD elements.
 - Made some of the fonts on the alternate fullscreen HUD non-monospace.
+- Moved the keys HUD element on the alternate fullscreen HUD to the left of the
+  ammo display.
+- Made the ammo counter on the alternate fullscreen HUD gold coloured when that
+  ammo type is full.
+- Adjusted the inactive weapon slots on the alternate fullscreen HUD to be more
+  visible.
+- Adjusted the positioning of the ammo pool on the alternate fullscreen HUD.
 - Added `-h` and `--help` command line arguments. If used, the script will list
   the available command line arguments.
 - Added `-p` and `--patch` command line arguments. If used, the script will
