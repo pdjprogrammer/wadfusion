@@ -106,10 +106,11 @@ num_errors = 0
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--version', action='version', version='WadFusion v%s' % VERSION)
-parser.add_argument('-v', '--verbose', help='Print out all the logged information.', action='store_true')
-parser.add_argument('-p', '--patch', help='Patch an existing IPK3 without extracting WADs.', action='store_true')
-parser.add_argument('-d', '--deflate', help='Use DEFLATE compression when generating the IPK3.', action='store_true')
-parser.add_argument('-e', '--extract-only', help='Skip copying pre-authored lumps and only extract WADs (for developers).', action='store_true')
+parser.add_argument('-v', '--verbose', help='Print out all the logged information', action='store_true')
+parser.add_argument('-w', '--wads', help='Use the specified directory path to search for WADs', metavar='PATH')
+parser.add_argument('-p', '--patch', help='Patch an existing IPK3 without extracting WADs', action='store_true')
+parser.add_argument('-d', '--deflate', help='Use DEFLATE compression when generating the IPK3', action='store_true')
+parser.add_argument('-e', '--extract-only', help='Skip copying pre-authored lumps and only extract WADs (for developers)', action='store_true')
 args = parser.parse_args()
 
 def should_deflate():
@@ -889,7 +890,7 @@ def pk3_patch():
     logfile.close()
 
 def main():
-    global num_maps, num_eps
+    global SRC_WAD_DIR, num_maps, num_eps
     # log python and os version
     logs(sys.version)
     logs(platform.system() + ' ' + os.name + ' ' + sys.platform + ' ' + platform.release())
@@ -905,6 +906,16 @@ def main():
     clear_temp()
     title_line = 'WadFusion v%s' % VERSION
     logg(title_line + '\n' + '-' * len(title_line) + '\n')
+    # source_wads/ directory stuff
+    if args.wads:
+        SRC_WAD_DIR = args.wads
+    if not path.exists(SRC_WAD_DIR):
+        print('The specified WADs directory "' + path.realpath(SRC_WAD_DIR) + '" does not exist!')
+        input('Press Enter to exit.\n')
+        logfile.close()
+        return
+    if not SRC_WAD_DIR.endswith('/'):
+        SRC_WAD_DIR += '/'
     # patch an existing ipk3 if --patch argument is used
     if should_patch():
         pk3_patch()
@@ -913,15 +924,15 @@ def main():
     # bail if no wads in SRC_WAD_DIR
     if len(found) == 0:
         logg('No source WADs found!\nPlease place your WAD files into %s.' % path.realpath(SRC_WAD_DIR))
-        logfile.close()
         input('Press Enter to exit.\n')
+        logfile.close()
         return
     logs('Found in %s:\n' % SRC_WAD_DIR + ', '.join(found) + '\n')
     # bail if no iwads in SRC_WAD_DIR
     if not get_wad_filename('doom') and not get_wad_filename('doomu') and not get_wad_filename('doom2') and not get_wad_filename('tnt') and not get_wad_filename('plutonia'):
         logg('No source IWADs found!\nPlease place your IWAD files into %s.' % path.realpath(SRC_WAD_DIR))
-        logfile.close()
         input('Press Enter to exit.\n')
+        logfile.close()
         return
     logg('A new IPK3 will be generated with the following episodes:')
     for num_eps, ep_name in enumerate(get_eps(found)):
