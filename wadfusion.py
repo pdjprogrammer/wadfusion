@@ -61,7 +61,7 @@ VERSION = '1.6.0-dev'
 DATA_TABLES_FILE = path.abspath(path.join(path.dirname(__file__), 'data/wadfusion_data.py'))
 DATA_DIR = path.abspath(path.join(path.dirname(__file__), 'data')) + '/'
 RES_DIR = path.abspath(path.join(path.dirname(__file__), 'res')) + '/'
-SRC_WAD_DIR = 'source_wads/'
+SRC_WAD_DIR = ['source_wads/']
 DEST_DIR = 'temp/'
 DEST_DIR_MUS = DEST_DIR + 'music/'
 DEST_DIR_GRAPHICS = DEST_DIR + 'graphics/'
@@ -83,10 +83,14 @@ MASTER_LEVELS_REJECTS_ORDER = []
 MASTER_LEVELS_PATCHES = {}
 MASTER_LEVELS_TITAN_PATCHES = {}
 MASTER_LEVELS_UDTWID_PATCHES = {}
-SIGIL_ALT_FILENAMES = []
-SIGIL_MP3_ALT_FILENAMES = []
-SIGIL2_ALT_FILENAMES = []
-SIGIL2_MP3_ALT_FILENAMES = []
+SIGIL_FILENAMES = []
+SIGIL_MP3_FILENAMES = []
+SIGIL2_FILENAMES = []
+SIGIL2_MP3_FILENAMES = []
+SIGIL_WAD = ''
+SIGIL_MP3_WAD = ''
+SIGIL2_WAD = ''
+SIGIL2_MP3_WAD = ''
 REGISTERED_DOOM_ONLY_LUMP = ''
 ULTIMATE_DOOM_ONLY_LUMP = ''
 NERVE_UNITY_KEX_ONLY_LUMP = ''
@@ -103,11 +107,12 @@ MASTER_LEVELS_MAP_PREFIX = WAD_MAP_PREFIXES.get('masterlevels', '')
 num_maps = 0
 num_eps = 0
 num_errors = 0
+src_wad_dirs_errors = 0
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--version', action='version', version='WadFusion v%s' % VERSION)
 parser.add_argument('-v', '--verbose', help='Print out all the logged information', action='store_true')
-parser.add_argument('-w', '--wads', help='Use the specified directory path to search for WADs', metavar='PATH')
+parser.add_argument('-w', '--wads', help='Search the specified directory path for WADs. Can be used multiple times', metavar='PATH', action='append')
 parser.add_argument('-p', '--patch', help='Patch an existing IPK3 without extracting WADs', action='store_true')
 parser.add_argument('-d', '--deflate', help='Use DEFLATE compression when generating the IPK3', action='store_true')
 parser.add_argument('-e', '--extract-only', help='Skip copying pre-authored lumps and only extract WADs (for developers)', action='store_true')
@@ -155,10 +160,33 @@ def logs(line, error=False):
 def get_wad_filename(wad_name):
     # return filename of first case-insensitive match
     wad_name += '.wad'
-    for filename in os.listdir(SRC_WAD_DIR):
-        if wad_name.lower() == filename.lower():
-            return SRC_WAD_DIR + filename
+    for i in SRC_WAD_DIR:
+        if path.exists(i):
+            if not i.endswith('/'):
+                i += '/'
+            for filename in os.listdir(i):
+                if wad_name.lower() == filename.lower():
+                    return i + filename
     return None
+
+def set_sigil_filenames():
+    global SIGIL_WAD, SIGIL_MP3_WAD, SIGIL2_WAD, SIGIL2_MP3_WAD
+    for i in SIGIL_FILENAMES:
+        if get_wad_filename(i):
+            SIGIL_WAD = i
+        continue
+    for i in SIGIL_MP3_FILENAMES:
+        if get_wad_filename(i):
+            SIGIL_MP3_WAD = i
+        continue
+    for i in SIGIL2_FILENAMES:
+        if get_wad_filename(i):
+            SIGIL2_WAD = i
+        continue
+    for i in SIGIL2_MP3_FILENAMES:
+        if get_wad_filename(i):
+            SIGIL2_MP3_WAD = i
+        continue
 
 def doom_is_registered():
     d1_wad = omg.WAD()
@@ -328,12 +356,12 @@ def add_to_wad_lump_lists():
         if pwad_is_kex('nerve'):
             logs('  Extracting KEX resources from nerve.wad')
             WAD_LUMP_LISTS['nerve'] += ['graphics_nerve_kex']
-    if pwad_is_kex('sigil'):
+    if pwad_is_kex(SIGIL_WAD):
         logs('  Extracting KEX resources from sigil.wad')
-        WAD_LUMP_LISTS['sigil'] += ['graphics_sigil_kex']
-    if pwad_is_kex('sigil2'):
+        WAD_LUMP_LISTS[SIGIL_WAD] += ['graphics_sigil_kex']
+    if pwad_is_kex(SIGIL2_WAD):
         logs('  Extracting KEX resources from sigil2.wad')
-        WAD_LUMP_LISTS['sigil2'] += ['graphics_sigil2_kex']
+        WAD_LUMP_LISTS[SIGIL2_WAD] += ['graphics_sigil2_kex']
     # if extras is the kex version
     if extras_is_kex():
         logs('  Extracting KEX resources from extras.wad')
@@ -547,12 +575,12 @@ def extract_lumps(wad_name):
             continue
         logs('  extracting %s...' % lump_list)
         # sigil sky is in data namespace but we want it in patches dir
-        if wad_name == 'sigil' and lump_list == 'patches_sigil':
+        if wad_name == SIGIL_WAD and lump_list == 'patches_sigil':
             lump_subdir = DEST_DIR + 'patches/'
         # sigil 1&2 screens aren't in graphics namespace but belong in that dir
-        elif wad_name == 'sigil' and lump_type == 'data':
+        elif wad_name == SIGIL_WAD and lump_type == 'data':
             lump_subdir = DEST_DIR + 'graphics/'
-        elif wad_name == 'sigil2' and lump_type == 'data':
+        elif wad_name == SIGIL2_WAD and lump_type == 'data':
             lump_subdir = DEST_DIR + 'graphics/'
         # legacy of rust statusbar icons and map title patches aren't in graphics namespace but belong in that dir
         elif wad_name == 'id1' and lump_type == 'data':
@@ -601,28 +629,28 @@ def extract_iwads():
         if iwad_name == 'nerve' and not get_wad_filename('doom2'):
             logg('  ERROR: Skipping nerve.wad as doom2.wad is not present', error=True)
             continue
-        if iwad_name == 'sigil':
+        if iwad_name == SIGIL_WAD:
             if not doom_is_registered():
                 if not doomu_is_retail():
                     logg('  ERROR: Skipping sigil.wad as registered or retail doom.wad is not present', error=True)
                     continue
-        if iwad_name == 'sigil_shreds' and not get_wad_filename('sigil'):
+        if iwad_name == SIGIL_MP3_WAD and not get_wad_filename(SIGIL_WAD):
             logg('  ERROR: Skipping sigil_shreds.wad as sigil.wad is not present', error=True)
             continue
-        if iwad_name == 'sigil_shreds':
+        if iwad_name == SIGIL_MP3_WAD:
             if not doom_is_registered():
                 if not doomu_is_retail():
                     logg('  ERROR: Skipping sigil_shreds.wad as registered or retail doom.wad is not present', error=True)
                     continue
-        if iwad_name == 'sigil2':
+        if iwad_name == SIGIL2_WAD:
             if not doom_is_registered():
                 if not doomu_is_retail():
                     logg('  ERROR: Skipping sigil2.wad as registered or retail doom.wad is not present', error=True)
                     continue
-        if iwad_name == 'sigil2_mp3' and not get_wad_filename('sigil2'):
+        if iwad_name == SIGIL2_MP3_WAD and not get_wad_filename(SIGIL2_WAD):
             logg('  ERROR: Skipping sigil2_mp3.wad as sigil2.wad is not present', error=True)
             continue
-        if iwad_name == 'sigil2_mp3':
+        if iwad_name == SIGIL2_MP3_WAD:
             if not doom_is_registered():
                 if not doomu_is_retail():
                     logg('  ERROR: Skipping sigil2_mp3.wad as registered or retail doom.wad is not present', error=True)
@@ -743,45 +771,30 @@ def extract():
         logs('Copying %s' % genmidi_filename)
         copyfile(RES_DIR + genmidi_filename, DEST_DIR + genmidi_filename)
 
+def source_wads_dirs():
+    global SRC_WAD_DIR, src_wad_dirs_errors
+    if args.wads:
+        SRC_WAD_DIR += args.wads
+    src_wad_dirs_num = len(SRC_WAD_DIR)
+    for i, j in enumerate(SRC_WAD_DIR):
+        if path.exists(j):
+            if i > 0:
+                logs('Searching for WADs in "' + path.realpath(j) + '".')
+        if not path.exists(j):
+            logg('The specified WADs directory "' + path.realpath(j) + '" does not exist!')
+            src_wad_dirs_errors += 1
+            if src_wad_dirs_errors == src_wad_dirs_num:
+                input('Press Enter to exit.\n')
+                logfile.close()
+                return
+        if not j.endswith('/'):
+            j += '/'
+
 def get_report_found():
     found = []
     for wadname in REPORT_WADS:
         if get_wad_filename(wadname):
             found.append(wadname)
-    # look for sigil by other names
-    if 'doom' in found and not 'sigil' in found:
-        for alt_name in SIGIL_ALT_FILENAMES:
-            sigil_alt = get_wad_filename(alt_name)
-            # rather than handle variable filename for it, just create
-            # a copy in source_wads/ with the expected name
-            if sigil_alt:
-                os.rename(sigil_alt, SRC_WAD_DIR + 'SIGIL.WAD')
-                found.insert(1, 'sigil')
-                break
-    # ... and its mp3 soundtrack version
-    if 'sigil' in found and not 'sigil_shreds' in found:
-        for alt_name in SIGIL_MP3_ALT_FILENAMES:
-            sigil_mp3_alt = get_wad_filename(alt_name)
-            if sigil_mp3_alt:
-                os.rename(sigil_mp3_alt, SRC_WAD_DIR + 'SIGIL_SHREDS.WAD')
-                found.insert(2, 'sigil_shreds')
-                break
-    # same with sigil2
-    if 'doom' in found and not 'sigil2' in found:
-        for alt_name in SIGIL2_ALT_FILENAMES:
-            sigil2_alt = get_wad_filename(alt_name)
-            if sigil2_alt:
-                os.rename(sigil2_alt, SRC_WAD_DIR + 'SIGIL2.WAD')
-                found.insert(3, 'sigil2')
-                break
-    # ... and sigil2 mp3 soundtrack version
-    if 'sigil2' in found and not 'sigil2_mp3' in found:
-        for alt_name in SIGIL2_MP3_ALT_FILENAMES:
-            sigil2_mp3_alt = get_wad_filename(alt_name)
-            if sigil2_mp3_alt:
-                os.rename(sigil2_mp3_alt, SRC_WAD_DIR + 'SIGIL2_MP3.WAD')
-                found.insert(4, 'sigil2_mp3')
-                break
     return found
 
 def clear_temp():
@@ -835,15 +848,15 @@ def get_eps(wads_found):
             eps += ['TNT: Evilution']
         elif wadname == 'plutonia':
             eps += ['The Plutonia Experiment']
-        elif wadname == 'sigil':
+        elif wadname == SIGIL_WAD:
             if doom_is_registered() or doomu_is_retail():
-                if 'sigil_shreds' in wads_found:
+                if SIGIL_MP3_WAD in wads_found:
                     extra += ' + Buckethead Soundtrack'
                 eps += ['SIGIL' + extra]
                 extra = ''
-        elif wadname == 'sigil2':
+        elif wadname == SIGIL2_WAD:
             if doom_is_registered() or doomu_is_retail():
-                if 'sigil2_mp3' in wads_found:
+                if SIGIL2_MP3_WAD in wads_found:
                     extra += ' + THORR Soundtrack'
                 eps += ['SIGIL II' + extra]
                 extra = ''
@@ -907,33 +920,29 @@ def main():
     title_line = 'WadFusion v%s' % VERSION
     logg(title_line + '\n' + '-' * len(title_line) + '\n')
     # source_wads/ directory stuff
-    if args.wads:
-        SRC_WAD_DIR = args.wads
-    if not path.exists(SRC_WAD_DIR):
-        print('The specified WADs directory "' + path.realpath(SRC_WAD_DIR) + '" does not exist!')
-        input('Press Enter to exit.\n')
-        logfile.close()
-        return
-    if not SRC_WAD_DIR.endswith('/'):
-        SRC_WAD_DIR += '/'
+    source_wads_dirs()
     # patch an existing ipk3 if --patch argument is used
     if should_patch():
         pk3_patch()
         return
+    # support for all the various filenames used by sigil releases
+    set_sigil_filenames()
     found = get_report_found()
     # bail if no wads in SRC_WAD_DIR
     if len(found) == 0:
-        logg('No source WADs found!\nPlease place your WAD files into %s.' % path.realpath(SRC_WAD_DIR))
+        logg('No source WADs found!\nPlease place your WAD files into "%s".' % path.realpath(SRC_WAD_DIR[0]))
         input('Press Enter to exit.\n')
         logfile.close()
         return
-    logs('Found in %s:\n' % SRC_WAD_DIR + ', '.join(found) + '\n')
+    logs('WADs found:\n' + ', '.join(found) + '\n')
     # bail if no iwads in SRC_WAD_DIR
     if not get_wad_filename('doom') and not get_wad_filename('doomu') and not get_wad_filename('doom2') and not get_wad_filename('tnt') and not get_wad_filename('plutonia'):
-        logg('No source IWADs found!\nPlease place your IWAD files into %s.' % path.realpath(SRC_WAD_DIR))
+        logg('No source IWADs found!\nPlease place your IWAD files into "%s".' % path.realpath(SRC_WAD_DIR[0]))
         input('Press Enter to exit.\n')
         logfile.close()
         return
+    if args.wads and src_wad_dirs_errors > 0:
+        logg('')
     logg('A new IPK3 will be generated with the following episodes:')
     for num_eps, ep_name in enumerate(get_eps(found)):
         logg('- %s' % ep_name)

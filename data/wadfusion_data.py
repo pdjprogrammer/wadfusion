@@ -205,7 +205,7 @@ RES_FILES = [
 # list of files we can extract from
 WADS = [
     'doom', 'doomu', 'doom2', 'tnt', 'plutonia',
-    'sigil', 'sigil_shreds', 'sigil2', 'sigil2_mp3',
+    SIGIL_WAD, SIGIL_MP3_WAD, SIGIL2_WAD, SIGIL2_MP3_WAD,
     'id1', 'iddm1', 'extras',
     'doomunity', 'doom2unity', 'tntunity', 'plutoniaunity',
     'doomkex', 'doom2kex', 'tntkex', 'plutoniakex',
@@ -215,7 +215,7 @@ WADS = [
 # wads to search for and report if found
 REPORT_WADS = [
     'doom', 'doomu',
-    'sigil', 'sigil_shreds', 'sigil2', 'sigil2_mp3',
+    SIGIL_WAD, SIGIL_MP3_WAD, SIGIL2_WAD, SIGIL2_MP3_WAD,
     'doom2', 'masterlevels',
     'attack', 'canyon', 'catwalk', 'fistula',
     'combine', 'subspace', 'paradox', 'subterra',
@@ -259,10 +259,10 @@ WAD_LUMP_LISTS = {
     'masterlevels': ['patches_masterlevels', 'graphics_masterlevels'],
     'tnt': ['graphics_tnt', 'music_tnt', 'patches_tnt'],
     'plutonia': ['graphics_plutonia', 'music_plutonia', 'patches_plutonia'],
-    'sigil': ['graphics_sigil', 'music_sigil', 'patches_sigil', 'data_sigil'],
-    'sigil_shreds': ['music_sigil_shreds'],
-    'sigil2': ['graphics_sigil2', 'music_sigil2', 'patches_sigil2', 'data_sigil2', 'flats_sigil2'],
-    'sigil2_mp3': ['music_sigil2_shreds'],
+    SIGIL_WAD: ['graphics_sigil', 'music_sigil', 'patches_sigil', 'data_sigil'],
+    SIGIL_MP3_WAD: ['music_sigil_shreds'],
+    SIGIL2_WAD: ['graphics_sigil2', 'music_sigil2', 'patches_sigil2', 'data_sigil2', 'flats_sigil2'],
+    SIGIL2_MP3_WAD: ['music_sigil2_shreds'],
     'id1': ID1_LUMPS,
     'iddm1': [],
     # widescreen assets from unity and kex ports
@@ -289,8 +289,8 @@ WAD_MAP_PREFIXES = {
     'nerve': 'NV_',
     # master levels not processed like other wads, bespoke prefix lookup
     'masterlevels': 'ML_',
-    'sigil': '',
-    'sigil2': '',
+    SIGIL_WAD: '',
+    SIGIL2_WAD: '',
     'id1': 'LR_',
     'iddm1': 'DM_'
 }
@@ -352,13 +352,13 @@ MASTER_LEVELS_UDTWID_PATCHES = {
 }
 
 # help the initial source wad reporting find sigil by any of its released names
-SIGIL_ALT_FILENAMES = ['sigil_v1_0', 'sigil_v1_1', 'sigil_v1_2', 'sigil_v1_21', 'sigil_v1_23']
+SIGIL_FILENAMES = ['sigil', 'sigil_v1_23', 'sigil_v1_21', 'sigil_v1_2', 'sigil_v1_1', 'sigil_v1_0']
 # sigil version with MP3 music
-SIGIL_MP3_ALT_FILENAMES = ['sigil_v1_23_reg']
+SIGIL_MP3_FILENAMES = ['sigil_shreds', 'sigil_v1_23_reg']
 # same for sigil2 - version with MIDI music
-SIGIL2_ALT_FILENAMES = ['sigil_ii_v1_0']
+SIGIL2_FILENAMES = ['sigil2', 'sigil_ii_v1_0']
 # sigil2 version with MP3 music (no sigil_shreds equivalent; MP3 music just an alternate wad)
-SIGIL2_MP3_ALT_FILENAMES = ['sigil_ii_mp3_v1_0']
+SIGIL2_MP3_FILENAMES = ['sigil2_mp3', 'sigil_ii_mp3_v1_0']
 
 # lump whose presence distinguishes shareware vs registered & Ultimate Doom
 REGISTERED_DOOM_ONLY_LUMP = 'SKULA1'

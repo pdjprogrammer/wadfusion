@@ -21,7 +21,7 @@ WadFusion can be launched with the following command line arguments:
 - `-h`, `--help` — Show the help message and exit.
 - `--version` —  Show program's version number and exit.
 - `-v`, `--verbose` — Print out all the logged information.
-- `-w PATH`, `--wads PATH` — Use the specified directory path to search for WADs.
+- `-w PATH`, `--wads PATH` — Search the specified directory path for WADs. Can be used multiple times.
 - `-p`, `--patch` — Patch an existing IPK3 without extracting WADs.
 - `-d`, `--deflate` — Use DEFLATE compression when generating the IPK3.
 - `-e`, `--extract-only` — Skip copying pre-authored lumps and only extract WADs (for developers).
