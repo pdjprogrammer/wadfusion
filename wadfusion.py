@@ -58,7 +58,6 @@ import omg
 VERSION = '1.6.0-dev'
 
 # abspath is used for the sake of the Windows executable
-DATA_TABLES_FILE = path.abspath(path.join(path.dirname(__file__), 'data/wadfusion_data.py'))
 DATA_DIR = path.abspath(path.join(path.dirname(__file__), 'data')) + '/'
 RES_DIR = path.abspath(path.join(path.dirname(__file__), 'res')) + '/'
 SRC_WAD_DIR = ['source_wads/']
@@ -68,7 +67,7 @@ DEST_DIR_GRAPHICS = DEST_DIR + 'graphics/'
 DEST_FILENAME = 'doom_fusion.ipk3'
 LOG_FILENAME = 'wadfusion.log'
 
-# forward-declare all the stuff in DATA_TABLES_FILE for clarity
+# forward-declare all the stuff in declare_data() for clarity
 RES_FILES = []
 WADS = []
 REPORT_WADS = []
@@ -83,6 +82,12 @@ MASTER_LEVELS_REJECTS_ORDER = []
 MASTER_LEVELS_PATCHES = {}
 MASTER_LEVELS_TITAN_PATCHES = {}
 MASTER_LEVELS_UDTWID_PATCHES = {}
+REGISTERED_DOOM_ONLY_LUMP = ''
+ULTIMATE_DOOM_ONLY_LUMP = ''
+NERVE_UNITY_KEX_ONLY_LUMP = ''
+PWAD_KEX_ONLY_LUMP = ''
+EXTRAS_KEX_ONLY_LUMP = ''
+
 SIGIL_FILENAMES = []
 SIGIL_MP3_FILENAMES = []
 SIGIL2_FILENAMES = []
@@ -91,17 +96,8 @@ SIGIL_WAD = ''
 SIGIL_MP3_WAD = ''
 SIGIL2_WAD = ''
 SIGIL2_MP3_WAD = ''
-REGISTERED_DOOM_ONLY_LUMP = ''
-ULTIMATE_DOOM_ONLY_LUMP = ''
-NERVE_UNITY_KEX_ONLY_LUMP = ''
-PWAD_KEX_ONLY_LUMP = ''
-EXTRAS_KEX_ONLY_LUMP = ''
 
 logfile = None
-
-exec(open(DATA_TABLES_FILE).read())
-
-MASTER_LEVELS_MAP_PREFIX = WAD_MAP_PREFIXES.get('masterlevels', '')
 
 # track # of maps extracted
 num_maps = 0
@@ -117,6 +113,341 @@ parser.add_argument('-p', '--patch', help='Patch an existing IPK3 without extrac
 parser.add_argument('-d', '--deflate', help='Use DEFLATE compression when generating the IPK3', action='store_true')
 parser.add_argument('-e', '--extract-only', help='Skip copying pre-authored lumps and only extract WADs (for developers)', action='store_true')
 args = parser.parse_args()
+
+# data tables
+def declare_data():
+    global RES_FILES, WADS, REPORT_WADS, COMMON_LUMPS, DOOM1_LUMPS, DOOM2_LUMPS, ID1_LUMPS, \
+           WAD_LUMP_LISTS, WAD_MAP_PREFIXES, MASTER_LEVELS_ORDER, \
+           MASTER_LEVELS_REJECTS_ORDER, MASTER_LEVELS_PATCHES, MASTER_LEVELS_TITAN_PATCHES, \
+           MASTER_LEVELS_UDTWID_PATCHES, REGISTERED_DOOM_ONLY_LUMP, \
+           ULTIMATE_DOOM_ONLY_LUMP, NERVE_UNITY_KEX_ONLY_LUMP, PWAD_KEX_ONLY_LUMP, \
+           EXTRAS_KEX_ONLY_LUMP
+    
+    # pre-authored resources to copy
+    RES_FILES = [
+        'iwadinfo.txt', 'mapinfo.txt', 'zscript.zs',
+        'cvarinfo.txt', 'menudef.txt', 'menudef.credits',
+        'language.menus.csv', 'language.credits.csv',
+        'language.levels.csv', 'language.story.csv',
+        'textures.txt', 'animdefs.txt', 'sndinfo.txt',
+        'in_epi1.txt', 'xwinter0.txt', 'xwinter1.txt',
+        'graphics/STAMMO24.lmp', 'graphics/STARMS24.lmp',
+        'graphics/TITLEPIC.lmp', 'graphics/M_DOOM.lmp',
+        'graphics/M_HELL.lmp', 'graphics/M_NOREST.lmp',
+        'graphics/M_MASTER.lmp', 'graphics/M_MASTR1.lmp',
+        'graphics/M_MASTR2.lmp', 'graphics/M_MASTR3.lmp',
+        'graphics/M_MASTR4.lmp', 'graphics/M_MASTR5.lmp',
+        'graphics/M_MASTR6.lmp', 'graphics/M_TNT.lmp',
+        'graphics/M_PLUT.lmp', 'graphics/M_EPI5.lmp',
+        'graphics/WILV03B.lmp', 'graphics/WILV07B.lmp',
+        'graphics/WILV39.lmp', 'graphics/WILV50.lmp',
+        'graphics/WILV51.lmp', 'graphics/WILV52.lmp',
+        'graphics/WILV53.lmp', 'graphics/WILV54.lmp',
+        'graphics/WILV55.lmp', 'graphics/WILV56.lmp',
+        'graphics/WILV57.lmp', 'graphics/WILV58.lmp',
+        'graphics/CWILV00.lmp', 'graphics/CWILV32.lmp',
+        'graphics/NWILV00.lmp', 'graphics/NWILV01.lmp',
+        'graphics/NWILV02.lmp', 'graphics/NWILV03.lmp',
+        'graphics/NWILV04.lmp', 'graphics/NWILV05.lmp',
+        'graphics/NWILV06.lmp', 'graphics/NWILV07.lmp',
+        'graphics/NWILV08.lmp', 'graphics/PWILV01.lmp',
+        'graphics/DWILV00.lmp', 'graphics/DWILV01.lmp',
+        'graphics/DWILV02.lmp', 'graphics/DWILV03.lmp',
+        'graphics/DWILV04.lmp', 'graphics/DWILV05.lmp',
+        'graphics/DWILV06.lmp', 'graphics/DWILV07.lmp',
+        'graphics/DWILV08.lmp', 'graphics/DWILV09.lmp',
+        'graphics/DWILV10.lmp', 'graphics/DWILV11.lmp',
+        'graphics/DWILV12.lmp', 'graphics/DWILV13.lmp',
+        'graphics/DWILV14.lmp', 'graphics/DWILV15.lmp',
+        'graphics/DWILV16.lmp', 'graphics/DWILV17.lmp',
+        'graphics/DWILV18.lmp', 'graphics/DWILV19.lmp',
+        'graphics/DWILV20.lmp', 'graphics/DWILV21.lmp',
+        'graphics/DWILV22.lmp', 'graphics/DWILV23.lmp',
+        'graphics/DWILV24.lmp', 'graphics/DWILV25.lmp',
+        'graphics/MWILV00.lmp', 'graphics/MWILV01.lmp',
+        'graphics/MWILV02.lmp', 'graphics/MWILV03.lmp',
+        'graphics/MWILV04.lmp', 'graphics/MWILV05.lmp',
+        'graphics/MWILV06.lmp', 'graphics/MWILV07.lmp',
+        'graphics/MWILV08.lmp', 'graphics/MWILV09.lmp',
+        'graphics/MWILV10.lmp', 'graphics/MWILV11.lmp',
+        'graphics/MWILV12.lmp', 'graphics/MWILV13.lmp',
+        'graphics/MWILV14.lmp', 'graphics/MWILV15.lmp',
+        'graphics/MWILV16.lmp', 'graphics/MWILV17.lmp',
+        'graphics/MWILV18.lmp', 'graphics/MWILV19.lmp',
+        'graphics/MWILV20.lmp', 'graphics/MWILV21.lmp',
+        'graphics/MWILV22.lmp', 'graphics/MWILV23.lmp',
+        'graphics/MWILV24.lmp', 'graphics/MWILV25.lmp',
+        'graphics/MWILV26.lmp', 'graphics/MWILV27.lmp',
+        'graphics/MWILV28.lmp', 'graphics/MWILV29.lmp',
+        'graphics/MWILV30.lmp', 'graphics/MWILV31.lmp',
+        'graphics/MWILV32.lmp', 'graphics/MWILV33.lmp',
+        'graphics/MWILV34.lmp', 'graphics/MWILV35.lmp',
+        'graphics/MWILV36.lmp', 'graphics/MWILV37.lmp',
+        'graphics/MWILV38.lmp', 'graphics/MWILV39.lmp',
+        'graphics/MWILV40.lmp', 'graphics/MWILV41.lmp',
+        'graphics/MWILV42.lmp',
+        'texdefs/fusion.txt',
+        'texdefs/common.txt',
+        'texdefs/doom1.txt',
+        'texdefs/doom2.txt',
+        'texdefs/tnt.txt',
+        'texdefs/plutonia.txt',
+        'texdefs/id1.txt',
+        'texdefs/masterlevels.txt',
+        'texdefs/masterlevelsrejects.txt',
+        'mapinfo/doomednums.txt',
+        'mapinfo/episodes.txt',
+        'mapinfo/clusters.txt',
+        'mapinfo/intermissions.txt',
+        'mapinfo/intermissions_intros.txt',
+        'mapinfo/intermissions_masterlevels.txt',
+        'mapinfo/intermissions_fullrun.txt',
+        'mapinfo/maps_doom1.txt',
+        'mapinfo/maps_doomu.txt',
+        'mapinfo/maps_doom2.txt',
+        'mapinfo/maps_masterlevels.txt',
+        'mapinfo/maps_masterlevels_rejects.txt',
+        'mapinfo/maps_masterlevels_flynn.txt',
+        'mapinfo/maps_masterlevels_anderson.txt',
+        'mapinfo/maps_masterlevels_kvernmo.txt',
+        'mapinfo/maps_masterlevels_story.txt',
+        'mapinfo/maps_nerve.txt',
+        'mapinfo/maps_tnt.txt',
+        'mapinfo/maps_plutonia.txt',
+        'mapinfo/maps_xbox.txt',
+        'mapinfo/maps_blackroom.txt',
+        'mapinfo/maps_sigil.txt',
+        'mapinfo/maps_sigil2.txt',
+        'mapinfo/maps_id1.txt',
+        'mapinfo/maps_iddm1.txt',
+        'maps/WF_NEWGAME.wad',
+        'maps/WF_NEWGAME_E1M1.wad',
+        'maps/WF_NEWGAME_E2M1.wad',
+        'maps/WF_NEWGAME_E3M1.wad',
+        'maps/WF_NEWGAME_E4M1.wad',
+        'maps/WF_NEWGAME_E5M1.wad',
+        'maps/WF_NEWGAME_E6M1.wad',
+        'maps/WF_NEWGAME_MAP01.wad',
+        'maps/WF_NEWGAME_ML_MAP01.wad',
+        'maps/WF_NEWGAME_NV_MAP01.wad',
+        'maps/WF_NEWGAME_LR_MAP01.wad',
+        'maps/WF_NEWGAME_LR_MAP08.wad',
+        'maps/WF_NEWGAME_TN_MAP01.wad',
+        'maps/WF_NEWGAME_PL_MAP01.wad',
+        'maps/WF_STORY.wad',
+        'maps/WF_STORY_ML_MAP29.wad',
+        'maps/WF_STORY_ML_MAP30.wad',
+        'maps/WF_STORY_ML_MAP31.wad',
+        'maps/WF_STORY_ML_MAP32.wad',
+        'maps/WF_STORY_ML_MAP16.wad',
+        'maps/WF_STORY_ML_MAP17.wad',
+        'maps/WF_STORY_ML_MAP33.wad',
+        'maps/WF_STORY_ML_MAP34.wad',
+        'maps/WF_STORY_ML_MAP11.wad',
+        'maps/WF_STORY_ML_MAP12.wad',
+        'maps/WF_STORY_ML_MAP13.wad',
+        'maps/WF_STORY_ML_MAP15.wad',
+        'maps/WF_STORY_ML_MAP19.wad',
+        'maps/WF_STORY_ML_MAP37.wad',
+        'maps/WF_STORY_ML_MAP38.wad',
+        'maps/WF_STORY_ML_MAP20.wad',
+        'maps/WF_STORY_ML_MAP18.wad',
+        'maps/WF_STORY_ML_MAP41.wad',
+        'maps/WF_STORY_ML_MAP42.wad',
+        'maps/WF_STORY_ML_MAP10.wad',
+        'maps/WF_STORY_ML_MAP43.wad',
+        'zscript/wf_handler.zs',
+        'zscript/wf_handler_static.zs',
+        'zscript/wf_tex_swap.zs',
+        'zscript/wf_tex_swap_all.zs',
+        'zscript/wf_mus_swap.zs',
+        'zscript/wf_mus_idkfa.zs',
+        'zscript/wf_mus_sigil.zs',
+        'zscript/wf_sbar.zs',
+        'zscript/wf_sbar_alt.zs',
+        'zscript/wf_masterlevels.zs',
+        'zscript/wf_fullrun.zs',
+        'zscript/wf_newgame.zs',
+        'zscript/wf_story.zs',
+        'zscript/wf_map_fixes.zs',
+        'zscript/wf_defaults.zs',
+        'endoom.bin', 'wadfused.txt'
+    ]
+    
+    # list of files we can extract from
+    WADS = [
+        'doom', 'doomu', 'doom2', 'tnt', 'plutonia',
+        SIGIL_WAD, SIGIL_MP3_WAD, SIGIL2_WAD, SIGIL2_MP3_WAD,
+        'id1', 'iddm1', 'extras',
+        'doomunity', 'doom2unity', 'tntunity', 'plutoniaunity',
+        'doomkex', 'doom2kex', 'tntkex', 'plutoniakex',
+        'masterlevels', 'nerve'
+    ]
+    
+    # wads to search for and report if found
+    REPORT_WADS = [
+        'doom', 'doomu',
+        SIGIL_WAD, SIGIL_MP3_WAD, SIGIL2_WAD, SIGIL2_MP3_WAD,
+        'doom2', 'masterlevels',
+        'attack', 'canyon', 'catwalk', 'fistula',
+        'combine', 'subspace', 'paradox', 'subterra',
+        'garrison', 'blacktwr', 'virgil', 'minos', 'nessus',
+        'geryon', 'vesperas', 'manor', 'ttrap', 'teeth',
+        'bloodsea', 'mephisto',
+        'cpu', 'device_1', 'dmz', 'cdk_fury', 'e_inside',
+        'hive', 'twm01', 'mines', 'anomaly', 'farside',
+        'trouble', 'dante25', 'achron22', 'udtwid', 'caball',
+        'nerve', 'id1', 'iddm1', 'tnt', 'plutonia',
+        'sewers', 'betray', 'e1m4b', 'e1m8b', 'extras',
+        'doomunity', 'doom2unity', 'tntunity', 'plutoniaunity',
+        'doomkex', 'doom2kex', 'tntkex', 'plutoniakex'
+    ]
+    
+    # lists of lumps common to doom 1+2
+    COMMON_LUMPS = [
+        'data_common', 'flats_common', 'graphics_common', 'patches_common',
+        'sounds_common', 'sprites_common', 'txdefs_common'
+    ]
+    
+    DOOM1_LUMPS = [
+        'graphics_doom1', 'music_doom1', 'patches_doom1'
+    ]
+    
+    DOOM2_LUMPS = [
+        'flats_doom2', 'graphics_doom2', 'music_doom2', 'patches_doom2',
+        'sounds_doom2', 'sprites_doom2'
+    ]
+    
+    ID1_LUMPS = [
+        'data_id1', 'flats_id1', 'graphics_id1', 'music_id1', 'patches_id1',
+        'sounds_id1', 'sprites_id1'
+    ]
+    
+    # lists of lumps to extract from each IWAD
+    WAD_LUMP_LISTS = {
+        'doom': COMMON_LUMPS + DOOM1_LUMPS + ['graphics_doom1_registered'],
+        'doomu': COMMON_LUMPS + DOOM1_LUMPS + ['graphics_doom1_retail', 'patches_doom1_retail'],
+        'doom2': COMMON_LUMPS + DOOM2_LUMPS,
+        'masterlevels': ['patches_masterlevels', 'graphics_masterlevels'],
+        'tnt': ['graphics_tnt', 'music_tnt', 'patches_tnt'],
+        'plutonia': ['graphics_plutonia', 'music_plutonia', 'patches_plutonia'],
+        SIGIL_WAD: ['graphics_sigil', 'music_sigil', 'patches_sigil', 'data_sigil'],
+        SIGIL_MP3_WAD: ['music_sigil_shreds'],
+        SIGIL2_WAD: ['graphics_sigil2', 'music_sigil2', 'patches_sigil2', 'data_sigil2', 'flats_sigil2'],
+        SIGIL2_MP3_WAD: ['music_sigil2_shreds'],
+        'id1': ID1_LUMPS,
+        'iddm1': [],
+        # widescreen assets from unity and kex ports
+        'doomunity': ['graphics_doom1_unity'],
+        'doom2unity': ['graphics_doom2_unity'],
+        'tntunity': ['graphics_tnt_unity'],
+        'plutoniaunity': ['graphics_plutonia_unity'],
+        'doomkex': ['graphics_doom1_unity'],
+        'doom2kex': ['graphics_doom2_unity'],
+        'tntkex': ['graphics_tnt_unity', 'graphics_tnt_kex'],
+        'plutoniakex': ['graphics_plutonia_unity', 'graphics_plutonia_kex'],
+        'nerve': [],
+        # extras.wad assets from unity and kex ports
+        'extras': ['data_extras', 'sounds_extras']
+    }
+    
+    # prefixes for filenames of maps extracted from IWADs
+    WAD_MAP_PREFIXES = {
+        'doom': '',
+        'doomu': '',
+        'doom2': '',
+        'tnt': 'TN_',
+        'plutonia': 'PL_',
+        'nerve': 'NV_',
+        # master levels not processed like other wads, bespoke prefix lookup
+        'masterlevels': 'ML_',
+        SIGIL_WAD: '',
+        SIGIL2_WAD: '',
+        'id1': 'LR_',
+        'iddm1': 'DM_'
+    }
+    
+    MASTER_LEVELS_ORDER = [
+        'attack',
+        'canyon',
+        'catwalk',
+        'fistula',
+        'combine',
+        'subspace',
+        'paradox',
+        'subterra',
+        'garrison',
+        'blacktwr',
+        'virgil',
+        'minos',
+        'nessus',
+        'geryon',
+        'vesperas',
+        'manor',
+        'ttrap',
+        'teeth',
+        'bloodsea',
+        'mephisto'
+    ]
+    
+    MASTER_LEVELS_REJECTS_ORDER = [
+        'cpu',
+        'device_1',
+        'dmz',
+        'cdk_fury',
+        'e_inside',
+        'hive',
+        'twm01',
+        'mines',
+        'anomaly',
+        'farside',
+        'trouble',
+        'dante25',
+        'achron22'
+    ]
+    
+    # texture patches to extract from specific master levels PWADs
+    MASTER_LEVELS_PATCHES = {
+        'combine': ('RSKY1', 'MSKY1'),
+        'virgil': ('RSKY1', 'MSKY2'),
+        'manor': ('STARS', 'STARS')
+    }
+    
+    MASTER_LEVELS_TITAN_PATCHES = {
+        'mines': ('TWF', 'WF1', 'WF2', 'WF3', 'WF4', 'WF5', 'WF6', 'WF7', 'WF8'),
+        'anomaly': ('BLACK', 'S_DOOM09', 'S_DOOM10', 'S_DOOM11', 'S_DOOM12', 'S_DOOM13', 'S_DOOM14', 'S_DOOM15', 'S_DOOM16'),
+        'trouble': ('FIRELV', 'SAVED', 'STARS1', 'STARSAT', 'TROU00', 'TROU01', 'TROU06', 'TROU07', 'TROU13')
+    }
+    
+    MASTER_LEVELS_UDTWID_PATCHES = {
+        'udtwid': ('SKY4', 'MSKY7')
+    }
+    
+    # lump whose presence distinguishes shareware vs registered & Ultimate Doom
+    REGISTERED_DOOM_ONLY_LUMP = 'SKULA1'
+    
+    # lump whose presence distinguishes registered vs Ultimate Doom
+    ULTIMATE_DOOM_ONLY_LUMP = 'M_EPI4'
+    
+    # lump whose presence distinguishes Unity & KEX vs original nerve.wad
+    NERVE_UNITY_KEX_ONLY_LUMP = 'INTERPIC'
+    
+    # lump whose presence distinguishes KEX vs original nerve.wad, sigil.wad, and sigil2.wad
+    PWAD_KEX_ONLY_LUMP = 'M_DOOM'
+    
+    # lump whose presence distinguishes Unity vs KEX extras.wad
+    EXTRAS_KEX_ONLY_LUMP = 'WATERMAP'
+
+def declare_data_sigil():
+    global SIGIL_FILENAMES, SIGIL_MP3_FILENAMES, SIGIL2_FILENAMES, SIGIL2_MP3_FILENAMES
+    # help the initial source wad reporting find sigil by any of its released names
+    SIGIL_FILENAMES = ['sigil', 'sigil_v1_23', 'sigil_v1_21', 'sigil_v1_2', 'sigil_v1_1', 'sigil_v1_0']
+    # sigil version with MP3 music
+    SIGIL_MP3_FILENAMES = ['sigil_shreds', 'sigil_v1_23_reg']
+    # same for sigil2 - version with MIDI music
+    SIGIL2_FILENAMES = ['sigil2', 'sigil_ii_v1_0']
+    # sigil2 version with MP3 music (no sigil_shreds equivalent; MP3 music just an alternate wad)
+    SIGIL2_MP3_FILENAMES = ['sigil2_mp3', 'sigil_ii_mp3_v1_0']
 
 def should_deflate():
     if args.deflate:
@@ -174,19 +505,19 @@ def set_sigil_filenames():
     for i in SIGIL_FILENAMES:
         if get_wad_filename(i):
             SIGIL_WAD = i
-        continue
+        break
     for i in SIGIL_MP3_FILENAMES:
         if get_wad_filename(i):
             SIGIL_MP3_WAD = i
-        continue
+        break
     for i in SIGIL2_FILENAMES:
         if get_wad_filename(i):
             SIGIL2_WAD = i
-        continue
+        break
     for i in SIGIL2_MP3_FILENAMES:
         if get_wad_filename(i):
             SIGIL2_MP3_WAD = i
-        continue
+        break
 
 def doom_is_registered():
     d1_wad = omg.WAD()
@@ -373,7 +704,7 @@ def extract_master_levels():
         in_wad = omg.WAD()
         wad_filename = get_wad_filename(wad_name)
         in_wad.from_file(wad_filename)
-        out_wad_filename = DEST_DIR + 'maps/' + MASTER_LEVELS_MAP_PREFIX + 'MAP'
+        out_wad_filename = DEST_DIR + 'maps/' + WAD_MAP_PREFIXES.get('masterlevels', '') + 'MAP'
         # extra zero for <10 map numbers, e.g. map01
         out_wad_filename += str(i + 1).rjust(2, '0') + '.wad'
         logs('  Extracting %s to %s' % (wad_filename, out_wad_filename))
@@ -382,7 +713,7 @@ def extract_master_levels():
         extract_map(in_wad, map_name, out_wad_filename)
     # save teeth map32 to map21
     wad_filename = get_wad_filename('teeth')
-    out_wad_filename = DEST_DIR + 'maps/' + MASTER_LEVELS_MAP_PREFIX + 'MAP21.wad'
+    out_wad_filename = DEST_DIR + 'maps/' + WAD_MAP_PREFIXES.get('masterlevels', '') + 'MAP21.wad'
     logs('  Extracting %s map32 to %s' % (wad_filename, out_wad_filename))
     in_wad = omg.WAD()
     in_wad.from_file(wad_filename)
@@ -417,7 +748,7 @@ def extract_master_levels_rejects():
         in_wad = omg.WAD()
         wad_filename = get_wad_filename(wad_name)
         in_wad.from_file(wad_filename)
-        out_wad_filename = DEST_DIR + 'maps/' + MASTER_LEVELS_MAP_PREFIX + 'MAP'
+        out_wad_filename = DEST_DIR + 'maps/' + WAD_MAP_PREFIXES.get('masterlevels', '') + 'MAP'
         out_wad_filename += str(i + 22) + '.wad'
         logs('  Extracting %s to %s' % (wad_filename, out_wad_filename))
         # grab first map we find in each wad
@@ -443,7 +774,7 @@ def extract_master_levels_rejects():
     wad_filename = get_wad_filename('caball')
     in_wad.from_file(wad_filename)
     for map_name in in_wad.maps.find('*'):
-        out_wad_filename = DEST_DIR + 'maps/' + MASTER_LEVELS_MAP_PREFIX + 'MAP'
+        out_wad_filename = DEST_DIR + 'maps/' + WAD_MAP_PREFIXES.get('masterlevels', '') + 'MAP'
         out_wad_filename += str(i + 37) + '.wad'
         logs('  Extracting %s map %s to %s' % (wad_filename, map_name, out_wad_filename))
         extract_map(in_wad, map_name, out_wad_filename)
@@ -921,12 +1252,15 @@ def main():
     logg(title_line + '\n' + '-' * len(title_line) + '\n')
     # source_wads/ directory stuff
     source_wads_dirs()
+    # support for all the various filenames used by sigil releases
+    declare_data_sigil()
+    set_sigil_filenames()
+    # initialize data tables
+    declare_data()
     # patch an existing ipk3 if --patch argument is used
     if should_patch():
         pk3_patch()
         return
-    # support for all the various filenames used by sigil releases
-    set_sigil_filenames()
     found = get_report_found()
     # bail if no wads in SRC_WAD_DIR
     if len(found) == 0:

@@ -14,6 +14,8 @@
   - The version of Sigil that is included in DOOM + DOOM II (v1.22) has map
     fixes that weren't carried over into v1.23, so it remains the recommended,
     effectively most up-to-date version.
+- All the various filenames used by Sigil's releases are now supported without
+  renaming.
 - Added title screen when starting new games.
   - Added "Intro title screens" compatibility option to automatically skip them.
 - Added "Intro stories" option to include "intermissions" at the start of
@@ -71,7 +73,12 @@
   visible.
 - Adjusted the positioning of the ammo pool on the alternate fullscreen HUD.
 - Added `-h` and `--help` command line arguments. If used, the script will list
-  the available command line arguments.
+  the available command line arguments, and then exit.
+- Added `--version` command line argument. If used, the script will print the
+  version number, and then exit.
+- Added `-w` and `--wads` command line arguments that can be used to specify
+  directories in which the script should search for WADs. Can be used multiple
+  times.
 - Added `-p` and `--patch` command line arguments. If used, the script will
   attempt to patch an existing IPK3 without needing to extract the WADs again.
   - Due to the restructuring of files in this update, I would recommend doing a
@@ -83,9 +90,9 @@
     shorter.
 - Added `-e` and `--extract-only` command line arguments. If used, the
   pre-authored lumps will be skipped when generating an IPK3, and only the
-  extracted WAD data will be included (and an IWADINFO lump).
+  extracted WAD data will be included (and also IWADINFO and TEXTURES lumps).
   - This should only be useful for developers, to test changes quickly without
-    packaging changes.
+    packaging them.
 - Rewrote how texture definitions are included when generating the IPK3.
 - The WadFusion version will now be printed out in GZDoom's console on startup.
 
